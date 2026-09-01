@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>UNO! OT Tracker Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK (Compat Version) -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<style>
+  :root {
+    /* Brand Color Palette Inspired by UNO! Coffee Company */
+    --brand-red: #E33B26;
+    --brand-red-dark: #C22B18;
+    --brand-black: #121212;
+    --brand-dark-gray: #1E1E1E;
+    --brand-gray-bg: #F4F4F6;
+    --panel-bg: #FFFFFF;
+    
+    /* Text Colors */
+    --ink-primary: #121212;
+    --ink-secondary: #666666;
+    --ink-muted: #8E8E93;
+    
+    /* Status Colors */
+    --pill-ot-bg: #E33B26;
+    --pill-ot-ink: #FFFFFF;
+    --pill-work-bg: #121212;
+    --pill-work-ink: #FFFFFF;
+    --pill-off-bg: #E5E5EA;
+    --pill-off-ink: #666666;
+    --pill-sick-bg: #FFF0F0;
+    --pill-sick-ink: #E33B26;
+    
+    /* UI Polish */
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+    --shadow-float: 0 12px 32px rgba(18,18,18,0.2);
+    --radius-card: 16px;
+    --radius-btn: 10px;
+    --radius-pill: 99px;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: var(--brand-gray-bg);
+    color: var(--ink-primary);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 440px;
+    min-height: 100vh;
+    padding: 0 16px 100px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .brand-banner {
+    background: var(--brand-red);
+    margin: 0 -16px 20px;
+    padding: 24px 20px 20px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(227, 59, 38, 0.25);
+  }
+  .brand-logo-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin: 0;
+  }
+  .brand-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: #FFFFFF;
+    color: var(--brand-black);
+    padding: 3px 6px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+
+  .user-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .user-badge span {
+    font-size: 12px;
+    font-weight: 600;
+    color: #FFFFFF;
+  }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-secondary);
+    margin-bottom: 6px;
+  }
+  input[type=text], input[type=password], input[type=time], select, textarea {
+    width: 100%;
+    border: 1px solid #E5E5EA;
+    border-radius: var(--radius-btn);
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink-primary);
+    background: #FFFFFF;
+    transition: all 0.2s ease;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--brand-black);
+    box-shadow: 0 0 0 3px rgba(18, 18, 18, 0.1);
+  }
+  textarea { height: 110px; resize: none; font-family: monospace; font-size: 12.5px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: var(--radius-btn);
+    border: none;
+    font-family: 'Space Grotesk', 'Sarabun', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .btn-primary { background: var(--brand-black); color: #FFFFFF; }
+  .btn-primary:hover { background: var(--brand-dark-gray); }
+  .btn-brand { background: var(--brand-red); color: #FFFFFF; }
+  .btn-brand:hover { background: var(--brand-red-dark); }
+  .btn-secondary { background: #E5E5EA; color: var(--ink-primary); }
+  .btn-secondary:hover { background: #D1D1D6; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid #E5E5EA;
+    background: #FFFFFF;
+    color: var(--ink-primary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .btn-icon:hover { background: var(--brand-gray-bg); }
+  .btn-icon svg { width: 16px; height: 16px; }
+
+  .card {
+    background: var(--panel-bg);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: 'Space Grotesk', 'Sarabun', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--brand-black);
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+  }
+
+  .metric-card {
+    background: var(--brand-black);
+    color: #FFFFFF;
+    border-radius: var(--radius-card);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+  }
+  .metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .metric-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .metric-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 12px;
+    color: #FFFFFF;
+  }
+
+  .list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--brand-gray-bg);
+    border-radius: var(--radius-btn);
+    margin-bottom: 8px;
+  }
+  .list-item-user { display: flex; align-items: center; gap: 12px; }
+  .avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--brand-black);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .user-meta-name { font-weight: 600; font-size: 14px; margin: 0; color: var(--brand-black); }
+  .user-meta-sub { font-size: 11px; color: var(--ink-secondary); margin: 0; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'Space Grotesk', 'Sarabun', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .badge-work { background: var(--pill-work-bg); color: var(--pill-work-ink); }
+  .badge-off { background: var(--pill-off-bg); color: var(--pill-off-ink); }
+  .badge-sick { background: var(--pill-sick-bg); color: var(--pill-sick-ink); }
+  .badge-ot { background: var(--pill-ot-bg); color: var(--pill-ot-ink); }
+
+  nav.bottom-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 408px;
+    background: var(--brand-black);
+    border-radius: var(--radius-pill);
+    padding: 6px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: var(--shadow-float);
+    z-index: 999;
+  }
+  nav.bottom-nav button {
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.5);
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Space Grotesk', 'Sarabun', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  nav.bottom-nav button.active { background: var(--brand-red); color: #FFFFFF; }
+  nav.bottom-nav button svg { width: 18px; height: 18px; stroke-width: 2.2; }
+
+  .login-box {
+    background: var(--panel-bg);
+    border-radius: var(--radius-card);
+    padding: 28px 20px;
+    box-shadow: var(--shadow-md);
+    margin-top: 20px;
+  }
+
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 1000;
+  }
+  @media (min-width: 480px) {
+    .modal-overlay { align-items: center; padding: 20px; }
+  }
+  .modal-box {
+    background: var(--panel-bg);
+    border-top-left-radius: var(--radius-card);
+    border-top-right-radius: var(--radius-card);
+    width: 100%; max-width: 440px;
+    padding: 24px;
+    box-shadow: var(--shadow-float);
+  }
+  @media (min-width: 480px) {
+    .modal-box { border-radius: var(--radius-card); }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="brand-banner">
+    <div>
+      <h1 class="brand-logo-text">UNO!</h1>
+      <div class="brand-tag">COFFEE COMPANY</div>
+    </div>
+    <div id="userBadgeArea"></div>
+  </div>
+
+  <main id="mainContent"></main>
+  <div id="modalArea"></div>
+  <nav id="bottomNavArea" class="bottom-nav" style="display:none;"></nav>
+</div>
+
+<script>
+// ==========================================
+// 1. FIREBASE CONFIGURATION (UNO-COFFEE-OT)
+// ==========================================
+const firebaseConfig = {
+  apiKey: "AIzaSyDTxQRCaJcf-NpVw2ULDJtjsD0tKlKkEUg",
+  authDomain: "uno-coffee-ot.firebaseapp.com",
+  projectId: "uno-coffee-ot",
+  storageBucket: "uno-coffee-ot.firebasestorage.app",
+  messagingSenderId: "423056554838",
+  appId: "1:423056554838:web:7c49c55f15c2d6b66a34f7",
+  measurementId: "G-19R1Y9H646"
+};
+
+// Initialize Firebase & Firestore
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// --- SVG ICONS ---
+const ICONS = {
+  upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+  list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+  summary: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>',
+  key: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 2l-2 2m-1.5 1.5l-3 3m-2 2l-3 3m-2 2l-3 3m-2 2l-2 2"/><circle cx="7.5" cy="7.5" r="4.5"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+};
+
+// --- INITIAL STATE ---
+const INITIAL_DATA = {
+  users: {
+    "admin": { code: "admin", pass: "admin123", role: "admin", name: "Manager" },
+    "200190": { code: "200190", pass: "1234", role: "employee", name: "อาม" },
+    "200211": { code: "200211", pass: "1234", role: "employee", name: "แพร" }
+  },
+  employees: {
+    "200190": { code: "200190", name: "อาม" },
+    "200211": { code: "200211", name: "แพร" }
+  },
+  shifts: [
+    { id: "s1", start: "08:30", end: "19:00", breakMin: 0 },
+    { id: "s2", start: "11:30", end: "22:00", breakMin: 0 }
+  ],
+  records: {}
+};
+
+const state = {
+  db: INITIAL_DATA,
+  currentUser: null,
+  activeTab: "entry",
+  parsedPreview: null,
+  activeModalKey: null,
+  showChangePassModal: false,
+  filterBranch: "ทั้งหมด",
+  filterPeriod: "",
+  loginError: "",
+  changePassError: "",
+  isLoaded: false
+};
+
+// --- FIREBASE SYNC FUNCTIONS ---
+db.collection("ot_system").doc("app_data").onSnapshot((doc) => {
+  if (doc.exists) {
+    state.db = doc.data();
+  } else {
+    saveDatabaseToCloud(INITIAL_DATA);
+  }
+  state.isLoaded = true;
+  render();
+});
+
+function saveDatabaseToCloud(newData) {
+  state.db = newData;
+  db.collection("ot_system").doc("app_data").set(newData)
+    .catch((error) => alert("Error saving to Cloud: " + error.message));
+}
+
+// --- CALCULATION HELPER FUNCTIONS ---
+function toMins(hhmm) {
+  if (!hhmm) return null;
+  const match = hhmm.trim().match(/^(\d{1,2}):(\d{2})$/);
+  return match ? parseInt(match[1], 10) * 60 + parseInt(match[2], 10) : null;
+}
+
+function minsToHours(mins) { return Math.round((mins / 60) * 100) / 100; }
+
+function formatOT(decimalHours) {
+  const totalMin = Math.round((decimalHours || 0) * 60);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return `${h}.${String(m).padStart(2, "0")}`;
+}
+
+function parseThaiDate(str) {
+  const match = str.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (!match) return null;
+  let [, d, mo, y] = match.map(Number);
+  if (y < 100) y += 2000;
+  return { d, mo, y };
+}
+
+function formatDateObj({ d, mo, y }) {
+  return `${String(d).padStart(2, "0")}/${String(mo).padStart(2, "0")}/${y}`;
+}
+
+function getDateKey({ d, mo, y }) {
+  return `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+
+function calculatePayCycle(ymdString) {
+  const [y, mo, d] = ymdString.split("-").map(Number);
+  let startMo = mo, startY = y, endMo = mo, endY = y;
+  if (d <= 20) {
+    startMo = mo - 1;
+    if (startMo === 0) { startMo = 12; startY -= 1; }
+  } else {
+    endMo = mo + 1;
+    if (endMo === 13) { endMo = 1; endY += 1; }
+  }
+  const start = { d: 21, mo: startMo, y: startY };
+  const end = { d: 20, mo: endMo, y: endY };
+  return {
+    key: `${getDateKey(start)}_${getDateKey(end)}`,
+    label: `${formatDateObj(start)} - ${formatDateObj(end)}`
+  };
+}
+
+function matchNearestShift(shifts, inMin) {
+  if (inMin == null) return null;
+  let selected = null, minDiff = Infinity;
+  for (const s of shifts) {
+    const sStart = toMins(s.start);
+    if (sStart == null) continue;
+    const diff = Math.abs(sStart - inMin);
+    if (diff < minDiff) { minDiff = diff; selected = s; }
+  }
+  return selected;
+}
+
+function parseShiftText(rawText) {
+  const text = rawText.trim();
+  if (/^off$/i.test(text) || /^หยุด$/.test(text)) return { status: "off" };
+  if (/ป่วย|ลาป่วย/.test(text)) return { status: "sick" };
+  const rangeMatch = text.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+  if (rangeMatch) return { status: "work", timeIn: rangeMatch[1], timeOut: rangeMatch[2] };
+  return { status: "work", timeIn: null, timeOut: null };
+}
+
+function calculateOT(row, shifts) {
+  if (row.status !== "work") return { normalHours: 0, otHours: 0 };
+  const inMin = toMins(row.timeIn);
+  const outMin = toMins(row.timeOut);
+  if (inMin == null || outMin == null) return { normalHours: 0, otHours: 0 };
+
+  const shift = matchNearestShift(shifts, inMin);
+  let otMin = 0;
+  if (shift) {
+    const shiftEnd = toMins(shift.end);
+    if (shiftEnd != null && outMin > shiftEnd) otMin = outMin - shiftEnd;
+  }
+  const breakMin = shift ? (shift.breakMin || 0) : 0;
+  const workedMin = outMin - inMin;
+  return {
+    normalHours: minsToHours(Math.max(workedMin - otMin - breakMin, 0)),
+    otHours: minsToHours(Math.max(otMin, 0))
+  };
+}
+
+function processReportText(text, shifts) {
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  let branch = "", dateObj = null;
+  const rows = [];
+
+  for (const line of lines) {
+    const bMatch = line.match(/สาขา\s*([A-Za-zก-๙0-9_-]+)/);
+    if (bMatch) branch = bMatch[1].trim();
+    const dMatch = line.match(/วันที่\s*(\d{1,2}\/\d{1,2}\/\d{2,4})/);
+    if (dMatch) dateObj = parseThaiDate(dMatch[1]);
+
+    const rMatch = line.match(/^\d+[.)]\s*(\d{4,})\s+(\S+)\s+(.*)$/);
+    if (rMatch) {
+      const [, code, name, rest] = rMatch;
+      const parsed = parseShiftText(rest);
+      const row = { code, name, ...parsed };
+      const calc = calculateOT(row, shifts);
+      rows.push({ ...row, ...calc });
+    }
+  }
+  return { branch, dateObj, rows };
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+
+// --- RENDERING VIEWS ---
+function renderUserBadge() {
+  const container = document.getElementById("userBadgeArea");
+  if (!state.currentUser) { container.innerHTML = ""; return; }
+  
+  container.innerHTML = `
+    <div class="user-badge">
+      <span>${escapeHtml(state.currentUser.name)}</span>
+      <button class="btn-icon" id="logoutBtn" style="width:24px; height:24px; background:transparent; border:none; color:#FFF;" title="ออกจากระบบ">${ICONS.logout}</button>
+    </div>
+  `;
+  document.getElementById("logoutBtn").onclick = () => {
+    state.currentUser = null;
+    state.loginError = "";
+    render();
+  };
+}
+
+function renderLogin() {
+  const main = document.getElementById("mainContent");
+  const bottomNav = document.getElementById("bottomNavArea");
+  bottomNav.style.display = "none";
+
+  main.innerHTML = `
+    <div class="login-box">
+      <h2 style="font-family:'Space Grotesk'; font-size: 20px; font-weight:700; margin:0 0 6px; text-transform:uppercase;">Sign In</h2>
+      <p style="font-size: 13px; color: var(--ink-secondary); margin:0 0 20px;">เข้าสู่ระบบจัดการเวลาทำงาน UNO!</p>
+      
+      <form id="loginForm">
+        <div class="field">
+          <label>Username / Staff ID</label>
+          <input type="text" id="loginCode" placeholder="admin หรือ รหัสพนักงาน" required autofocus>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="loginPass" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-brand" style="width: 100%; margin-top: 8px;">LOG IN</button>
+      </form>
+      ${state.loginError ? `<p style="color:var(--brand-red); font-size:12px; font-weight:600; text-align:center; margin-top:14px; margin-bottom:0;">${escapeHtml(state.loginError)}</p>` : ''}
+    </div>
+  `;
+
+  document.getElementById("loginForm").onsubmit = (e) => {
+    e.preventDefault();
+    const code = document.getElementById("loginCode").value.trim();
+    const pass = document.getElementById("loginPass").value.trim();
+    const user = state.db.users ? state.db.users[code] : null;
+
+    if (user && user.pass === pass) {
+      state.currentUser = user;
+      state.loginError = "";
+      state.activeTab = user.role === "admin" ? "entry" : "my_ot";
+      render();
+    } else {
+      state.loginError = "รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง";
+      render();
+    }
+  };
+}
+
+function renderMainApp() {
+  const main = document.getElementById("mainContent");
+  const bottomNav = document.getElementById("bottomNavArea");
+  const isAdmin = state.currentUser.role === "admin";
+  
+  const tabs = isAdmin ? [
+    { id: "entry", label: "บันทึก", icon: "upload" },
+    { id: "records", label: "รายการ", icon: "list" },
+    { id: "summary", label: "สรุปผล", icon: "summary" },
+    { id: "settings", label: "ตั้งค่า", icon: "settings" }
+  ] : [
+    { id: "my_ot", label: "OT ของฉัน", icon: "user" }
+  ];
+
+  bottomNav.style.display = "flex";
+  bottomNav.innerHTML = tabs.map(t => `
+    <button class="${state.activeTab === t.id ? 'active' : ''}" onclick="switchTab('${t.id}')">
+      ${ICONS[t.icon]}
+      <span>${t.label}</span>
+    </button>
+  `).join("");
+
+  main.innerHTML = `<div id="tabContent"></div>`;
+  const container = document.getElementById("tabContent");
+
+  if (state.activeTab === "entry") renderEntryTab(container);
+  else if (state.activeTab === "records") renderRecordsTab(container);
+  else if (state.activeTab === "summary") renderSummaryTab(container);
+  else if (state.activeTab === "settings") renderSettingsTab(container);
+  else if (state.activeTab === "my_ot") renderEmployeeView(container);
+}
+
+function switchTab(tabId) {
+  state.activeTab = tabId;
+  render();
+}
+
+// --- TABS ---
+function renderEntryTab(container) {
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">${ICONS.upload} บันทึกข้อมูลเวลาทำงาน</div>
+      </div>
+      <div class="field">
+        <label>ข้อความลงเวลาจาก Chat</label>
+        <textarea id="rawInput" placeholder="สาขา UNO-01&#10;วันที่ 21/08/26&#10;1. 200190 อาม 11:30 - 22:00&#10;2. 200211 แพร off"></textarea>
+      </div>
+      <button class="btn btn-brand" style="width:100%;" onclick="handleParseText()">ประมวลผลข้อมูล</button>
+    </div>
+    <div id="previewArea"></div>
+  `;
+
+  if (state.parsedPreview) renderPreviewSection(document.getElementById("previewArea"));
+}
+
+function handleParseText() {
+  const txt = document.getElementById("rawInput").value;
+  if (!txt.trim()) return;
+  state.parsedPreview = processReportText(txt, state.db.shifts || []);
+  render();
+}
+
+function renderPreviewSection(container) {
+  const p = state.parsedPreview;
+  const isValid = p.branch && p.dateObj;
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">ตรวจสอบก่อนบันทึก</div>
+        <span class="badge ${isValid ? 'badge-ot' : 'badge-sick'}">
+          ${isValid ? 'READY' : 'INCOMPLETE'}
+        </span>
+      </div>
+      <p style="font-size:12px; color:var(--ink-secondary); margin-top:0; margin-bottom:12px;">
+        สาขา: <b>${escapeHtml(p.branch || "ไม่ระบุ")}</b> | วันที่: <b>${p.dateObj ? formatDateObj(p.dateObj) : "ไม่ระบุ"}</b>
+      </p>
+
+      ${p.rows.map(r => `
+        <div class="list-item">
+          <div class="list-item-user">
+            <div class="avatar-circle">${escapeHtml(r.name.substring(0,1))}</div>
+            <div>
+              <p class="user-meta-name">${escapeHtml(r.name)}</p>
+              <p class="user-meta-sub">${r.timeIn || '-'}${r.timeOut ? ' - ' + r.timeOut : ''}</p>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <span class="badge ${r.status==='work'?'badge-work':r.status==='off'?'badge-off':'badge-sick'}">
+              ${r.status==='work'?'WORK':r.status==='off'?'OFF':'LEAVE'}
+            </span>
+            <div style="margin-top:4px;">${r.otHours > 0 ? `<span class="badge badge-ot">+${formatOT(r.otHours)} HRS</span>` : ''}</div>
+          </div>
+        </div>
+      `).join("")}
+
+      <button class="btn btn-primary" style="width:100%; margin-top:12px;" ${!isValid ? 'disabled' : ''} onclick="commitSaveData()">ยืนยันการบันทึก</button>
+    </div>
+  `;
+}
+
+function commitSaveData() {
+  const p = state.parsedPreview;
+  if (!p || !p.branch || !p.dateObj) return;
+
+  const key = `${p.branch}|${getDateKey(p.dateObj)}`;
+  const nextEmps = { ...(state.db.employees || {}) };
+  const nextUsers = { ...(state.db.users || {}) };
+
+  p.rows.forEach(r => {
+    nextEmps[r.code] = { code: r.code, name: r.name };
+    if (!nextUsers[r.code]) {
+      nextUsers[r.code] = { code: r.code, pass: "1234", role: "employee", name: r.name };
+    }
+  });
+
+  const nextRecords = { ...(state.db.records || {}), [key]: p.rows };
+  state.parsedPreview = null;
+  saveDatabaseToCloud({ ...state.db, employees: nextEmps, users: nextUsers, records: nextRecords });
+  alert("บันทึกข้อมูลเรียบร้อยแล้ว");
+}
+
+function renderRecordsTab(container) {
+  const entries = Object.entries(state.db.records || {}).sort((a,b) => b[0].localeCompare(a[0]));
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">${ICONS.list} ประวัติการลงเวลา</div>
+      </div>
+      ${entries.length === 0 ? `<div style="text-align:center; padding:24px; color:var(--ink-secondary);">ไม่มีรายการข้อมูล</div>` : 
+        entries.map(([key, rows]) => {
+          const [branch, ymd] = key.split("|");
+          const otSum = rows.reduce((s, r) => s + (r.otHours || 0), 0);
+          return `
+            <div class="list-item" onclick="openDetailModal('${key}')" style="cursor:pointer;">
+              <div>
+                <p class="user-meta-name">${ymd} (${escapeHtml(branch)})</p>
+                <p class="user-meta-sub">พนักงาน ${rows.length} คน</p>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="badge badge-ot">${formatOT(otSum)} HRS</span>
+                <button class="btn-icon" style="color:var(--brand-red);" onclick="event.stopPropagation(); deleteRecord('${key}');">${ICONS.trash}</button>
+              </div>
+            </div>
+          `;
+        }).join("")
+      }
+    </div>
+  `;
+}
+
+function deleteRecord(key) {
+  if (confirm(`คุณต้องการลบรายการ ${key} ใช่หรือไม่?`)) {
+    const nextRecords = { ...(state.db.records || {}) };
+    delete nextRecords[key];
+    saveDatabaseToCloud({ ...state.db, records: nextRecords });
+  }
+}
+
+function openDetailModal(key) {
+  state.activeModalKey = key;
+  renderModal();
+}
+
+function renderSummaryTab(container) {
+  const periodMap = {};
+  const branchSet = new Set(["ทั้งหมด"]);
+
+  Object.keys(state.db.records || {}).forEach(k => {
+    const [b, ymd] = k.split("|");
+    branchSet.add(b);
+    const p = calculatePayCycle(ymd);
+    periodMap[p.key] = p.label;
+  });
+
+  const periodKeys = Object.keys(periodMap).sort().reverse();
+  if (!state.filterPeriod && periodKeys.length > 0) state.filterPeriod = periodKeys[0];
+
+  const stats = {};
+  Object.keys(state.db.employees || {}).forEach(code => {
+    stats[code] = { ...state.db.employees[code], otHours: 0, workDays: 0, offDays: 0 };
+  });
+
+  if (state.filterPeriod) {
+    Object.entries(state.db.records || {}).forEach(([k, rows]) => {
+      const [b, ymd] = k.split("|");
+      const p = calculatePayCycle(ymd);
+      if (p.key === state.filterPeriod && (state.filterBranch === "ทั้งหมด" || state.filterBranch === b)) {
+        rows.forEach(r => {
+          if (!stats[r.code]) stats[r.code] = { code: r.code, name: r.name, otHours: 0, workDays: 0, offDays: 0 };
+          stats[r.code].otHours += (r.otHours || 0);
+          if (r.status === "work") stats[r.code].workDays++;
+          if (r.status === "off") stats[r.code].offDays++;
+        });
+      }
+    });
+  }
+
+  const totalOtPeriod = Object.values(stats).reduce((acc, curr) => acc + curr.otHours, 0);
+
+  container.innerHTML = `
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-title">TOTAL OVERTIME</span>
+        <span class="badge badge-ot">CYCLE 21-20</span>
+      </div>
+      <div class="metric-val">${formatOT(totalOtPeriod)} <span style="font-size:16px; font-weight:500;">HRS</span></div>
+    </div>
+
+    <div class="card">
+      <div class="field" style="margin-bottom:10px;">
+        <label>รอบเวลา</label>
+        <select onchange="state.filterPeriod=this.value; render();">
+          ${periodKeys.map(k => `<option value="${k}" ${k===state.filterPeriod?'selected':''}>${periodMap[k]}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field">
+        <label>สาขา</label>
+        <select onchange="state.filterBranch=this.value; render();">
+          ${Array.from(branchSet).map(b => `<option value="${b}" ${b===state.filterBranch?'selected':''}>${b}</option>`).join("")}
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">สรุปรายพนักงาน (${Object.keys(stats).length} คน)</div>
+      </div>
+      ${Object.values(stats).map(s => `
+        <div class="list-item">
+          <div class="list-item-user">
+            <div class="avatar-circle">${escapeHtml(s.name.substring(0,1))}</div>
+            <div>
+              <p class="user-meta-name">${escapeHtml(s.name)}</p>
+              <p class="user-meta-sub">ทำ ${s.workDays} วัน | หยุด ${s.offDays} วัน</p>
+            </div>
+          </div>
+          <span class="badge badge-ot">${formatOT(s.otHours)} HRS</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderSettingsTab(container) {
+  const shifts = state.db.shifts || [];
+  const emps = Object.values(state.db.employees || {});
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">${ICONS.settings} ตั้งค่ากะมาตรฐาน</div>
+        <button class="btn btn-secondary btn-sm" onclick="addShift()">${ICONS.plus}</button>
+      </div>
+      ${shifts.map((s, idx) => `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+          <span style="font-size:11px; font-weight:700; width:40px; color:var(--ink-secondary);">กะ ${idx+1}</span>
+          <input type="time" value="${s.start}" onchange="updateShift('${s.id}', 'start', this.value)">
+          <input type="time" value="${s.end}" onchange="updateShift('${s.id}', 'end', this.value)">
+          <button class="btn-icon" style="color:var(--brand-red);" onclick="removeShift('${s.id}')">${ICONS.trash}</button>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">${ICONS.user} พนักงาน & รหัสผ่าน</div>
+        <button class="btn btn-secondary btn-sm" onclick="addEmployee()">${ICONS.plus}</button>
+      </div>
+      ${emps.map(e => {
+        const u = (state.db.users || {})[e.code] || { pass: "1234" };
+        return `
+          <div class="list-item" style="flex-direction:column; align-items:stretch; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:12px; font-weight:700; color:var(--ink-secondary);">${e.code}</span>
+              <button class="btn-icon" style="color:var(--brand-red); width:28px; height:28px;" onclick="removeEmployee('${e.code}')">${ICONS.trash}</button>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" value="${escapeHtml(e.name)}" placeholder="ชื่อพนักงาน" onchange="updateEmpName('${e.code}', this.value)">
+              <input type="text" value="${escapeHtml(u.pass)}" placeholder="รหัสผ่าน" style="width:110px; font-family:monospace;" onchange="updateEmpPass('${e.code}', this.value)">
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function updateShift(id, field, val) {
+  const nextShifts = (state.db.shifts || []).map(s => s.id === id ? { ...s, [field]: val } : s);
+  saveDatabaseToCloud({ ...state.db, shifts: nextShifts });
+}
+
+function addShift() {
+  const nextShifts = [...(state.db.shifts || []), { id: "s_" + Date.now(), start: "09:00", end: "18:00", breakMin: 0 }];
+  saveDatabaseToCloud({ ...state.db, shifts: nextShifts });
+}
+
+function removeShift(id) {
+  saveDatabaseToCloud({ ...state.db, shifts: (state.db.shifts || []).filter(s => s.id !== id) });
+}
+
+function updateEmpName(code, name) {
+  const nextEmps = { ...(state.db.employees || {}), [code]: { code, name: name.trim() } };
+  const nextUsers = { ...(state.db.users || {}) };
+  if (nextUsers[code]) nextUsers[code].name = name.trim();
+  saveDatabaseToCloud({ ...state.db, employees: nextEmps, users: nextUsers });
+}
+
+function updateEmpPass(code, pass) {
+  const nextUsers = { ...(state.db.users || {}) };
+  if (!nextUsers[code]) nextUsers[code] = { code, role: "employee", name: state.db.employees[code]?.name || code };
+  nextUsers[code].pass = pass.trim();
+  saveDatabaseToCloud({ ...state.db, users: nextUsers });
+}
+
+function addEmployee() {
+  const code = prompt("ระบุรหัสพนักงาน:");
+  if (!code) return;
+  const name = prompt("ระบุชื่อพนักงาน:");
+  if (!name) return;
+  const pass = prompt("กำหนดรหัสผ่าน:", "1234") || "1234";
+
+  const nextEmps = { ...(state.db.employees || {}), [code]: { code, name: name.trim() } };
+  const nextUsers = { ...(state.db.users || {}), [code]: { code, pass: pass.trim(), role: "employee", name: name.trim() } };
+  saveDatabaseToCloud({ ...state.db, employees: nextEmps, users: nextUsers });
+}
+
+function removeEmployee(code) {
+  if (confirm(`ยืนยันการลบพนักงานรหัส ${code}?`)) {
+    const nextEmps = { ...(state.db.employees || {}) };
+    const nextUsers = { ...(state.db.users || {}) };
+    delete nextEmps[code];
+    delete nextUsers[code];
+    saveDatabaseToCloud({ ...state.db, employees: nextEmps, users: nextUsers });
+  }
+}
+
+// --- EMPLOYEE VIEW ---
+function renderEmployeeView(container) {
+  const code = state.currentUser.code;
+  const name = state.currentUser.name;
+
+  let totalOt = 0;
+  const history = [];
+
+  Object.entries(state.db.records || {}).forEach(([key, rows]) => {
+    const [branch, ymd] = key.split("|");
+    const record = rows.find(r => r.code === code);
+    if (record) {
+      history.push({ ymd, branch, ...record });
+      totalOt += (record.otHours || 0);
+    }
+  });
+
+  history.sort((a,b) => b.ymd.localeCompare(a.ymd));
+
+  container.innerHTML = `
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-title">ACCUMULATED OVERTIME</span>
+        <button class="btn btn-secondary btn-sm" onclick="openChangePasswordModal()">${ICONS.key} PASS</button>
+      </div>
+      <div class="metric-val">${formatOT(totalOt)} <span style="font-size:16px; font-weight:500;">HRS</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">${ICONS.user} ประวัติการทำงาน: ${escapeHtml(name)}</div>
+      </div>
+      ${history.length === 0 ? `<div style="text-align:center; padding:24px; color:var(--ink-secondary);">ไม่มีข้อมูลประวัติ</div>` : 
+        history.map(h => `
+          <div class="list-item">
+            <div>
+              <p class="user-meta-name">${h.ymd} (${escapeHtml(h.branch)})</p>
+              <p class="user-meta-sub">${h.timeIn || '-'}${h.timeOut ? ' - ' + h.timeOut : ''}</p>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge ${h.status==='work'?'badge-work':h.status==='off'?'badge-off':'badge-sick'}">
+                ${h.status==='work'?'WORK':h.status==='off'?'OFF':'LEAVE'}
+              </span>
+              <div style="margin-top:4px;">${h.otHours > 0 ? `<span class="badge badge-ot">+${formatOT(h.otHours)} HRS</span>` : ''}</div>
+            </div>
+          </div>
+        `).join("")
+      }
+    </div>
+  `;
+}
+
+function openChangePasswordModal() {
+  state.showChangePassModal = true;
+  state.changePassError = "";
+  renderModal();
+}
+
+function renderModal() {
+  const modalArea = document.getElementById("modalArea");
+  if (state.showChangePassModal) {
+    renderChangePasswordModal(modalArea);
+    return;
+  }
+
+  if (!state.activeModalKey || !state.db.records[state.activeModalKey]) {
+    modalArea.innerHTML = "";
+    return;
+  }
+
+  const key = state.activeModalKey;
+  const [branch, ymd] = key.split("|");
+  const rows = state.db.records[key];
+
+  modalArea.innerHTML = `
+    <div class="modal-overlay" onclick="closeModal(event)">
+      <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="card-header">
+          <div class="card-title">รายละเอียดเวลาทำงาน</div>
+          <button class="btn-icon" onclick="closeModal()">${ICONS.x}</button>
+        </div>
+        <p style="font-size:12px; color:var(--ink-secondary); margin-top:0; margin-bottom:12px;">สาขา: <b>${escapeHtml(branch)}</b> | วันที่: <b>${ymd}</b></p>
+        
+        <div style="max-height: 50vh; overflow-y: auto;">
+          ${rows.map(r => `
+            <div class="list-item">
+              <div class="list-item-user">
+                <div class="avatar-circle">${escapeHtml(r.name.substring(0,1))}</div>
+                <div>
+                  <p class="user-meta-name">${escapeHtml(r.name)} (${r.code})</p>
+                  <p class="user-meta-sub">${r.timeIn || '-'}${r.timeOut ? ' - ' + r.timeOut : ''}</p>
+                </div>
+              </div>
+              <span class="badge badge-ot">${formatOT(r.otHours)} HRS</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function closeModal(e) {
+  if (!e || e.target.classList.contains('modal-overlay') || e.target.closest('.btn-icon') || e.target.classList.contains('btn-secondary')) {
+    state.activeModalKey = null;
+    state.showChangePassModal = false;
+    state.changePassError = "";
+    renderModal();
+  }
+}
+
+function renderChangePasswordModal(modalArea) {
+  modalArea.innerHTML = `
+    <div class="modal-overlay" onclick="closeModal(event)">
+      <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="card-header">
+          <div class="card-title">${ICONS.key} เปลี่ยนรหัสผ่าน</div>
+          <button class="btn-icon" onclick="closeModal()">${ICONS.x}</button>
+        </div>
+        
+        <form id="changePassForm">
+          <div class="field">
+            <label>รหัสผ่านปัจจุบัน</label>
+            <input type="password" id="oldPass" required placeholder="••••••••">
+          </div>
+          <div class="field">
+            <label>รหัสผ่านใหม่</label>
+            <input type="password" id="newPass" required placeholder="••••••••">
+          </div>
+          <div class="field">
+            <label>ยืนยันรหัสผ่านใหม่</label>
+            <input type="password" id="confirmPass" required placeholder="••••••••">
+          </div>
+          
+          ${state.changePassError ? `<p style="color:var(--brand-red); font-size:12px; margin-top:0; margin-bottom:12px;">${escapeHtml(state.changePassError)}</p>` : ''}
+          
+          <div style="display:flex; gap:8px; margin-top:20px;">
+            <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal()">CANCEL</button>
+            <button type="submit" class="btn btn-brand" style="flex:1;">SAVE</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("changePassForm").onsubmit = (e) => {
+    e.preventDefault();
+    const oldPass = document.getElementById("oldPass").value.trim();
+    const newPass = document.getElementById("newPass").value.trim();
+    const confirmPass = document.getElementById("confirmPass").value.trim();
+    const user = (state.db.users || {})[state.currentUser.code];
+
+    if (oldPass !== user.pass) {
+      state.changePassError = "รหัสผ่านปัจจุบันไม่ถูกต้อง";
+      renderModal();
+      return;
+    }
+
+    if (newPass.length < 4) {
+      state.changePassError = "รหัสผ่านใหม่ต้องมีอย่างน้อย 4 ตัวอักษร";
+      renderModal();
+      return;
+    }
+
+    if (newPass !== confirmPass) {
+      state.changePassError = "รหัสผ่านใหม่และการยืนยันไม่ตรงกัน";
+      renderModal();
+      return;
+    }
+
+    const nextUsers = { ...(state.db.users || {}) };
+    nextUsers[user.code].pass = newPass;
+    state.currentUser.pass = newPass;
+    state.showChangePassModal = false;
+    state.changePassError = "";
+    saveDatabaseToCloud({ ...state.db, users: nextUsers });
+    alert("เปลี่ยนรหัสผ่านเรียบร้อยแล้ว");
+  };
+}
+
+// --- MAIN RENDER LOGIC ---
+function render() {
+  if (!state.isLoaded) {
+    document.getElementById("mainContent").innerHTML = `
+      <div style="text-align:center; padding: 40px 0; color: var(--ink-secondary);">
+        กำลังเชื่อมต่อฐานข้อมูล...
+      </div>
+    `;
+    return;
+  }
+
+  renderUserBadge();
+  if (!state.currentUser) {
+    renderLogin();
+  } else {
+    renderMainApp();
+    renderModal();
+  }
+}
+
+// Initial Call
+render();
+</script>
+</body>
+</html>
