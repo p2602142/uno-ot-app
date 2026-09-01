@@ -14,7 +14,6 @@
 
 <style>
   :root {
-    /* Brand Color Palette Inspired by UNO! Coffee Company */
     --brand-red: #E33B26;
     --brand-red-dark: #C22B18;
     --brand-black: #121212;
@@ -22,12 +21,10 @@
     --brand-gray-bg: #F4F4F6;
     --panel-bg: #FFFFFF;
     
-    /* Text Colors */
     --ink-primary: #121212;
     --ink-secondary: #666666;
     --ink-muted: #8E8E93;
     
-    /* Status Colors */
     --pill-ot-bg: #E33B26;
     --pill-ot-ink: #FFFFFF;
     --pill-work-bg: #121212;
@@ -37,7 +34,6 @@
     --pill-sick-bg: #FFF0F0;
     --pill-sick-ink: #E33B26;
     
-    /* UI Polish */
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
     --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
     --shadow-float: 0 12px 32px rgba(18,18,18,0.2);
@@ -367,7 +363,7 @@
 
 <script>
 // ==========================================
-// 1. FIREBASE CONFIGURATION (UNO-COFFEE-OT)
+// FIREBASE CONFIGURATION & INITIAL SETUP
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyDTxQRCaJcf-NpVw2ULDJtjsD0tKlKkEUg",
@@ -379,11 +375,9 @@ const firebaseConfig = {
   measurementId: "G-19R1Y9H646"
 };
 
-// Initialize Firebase & Firestore
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// --- SVG ICONS ---
 const ICONS = {
   upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
   list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
@@ -397,7 +391,6 @@ const ICONS = {
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
 };
 
-// --- INITIAL STATE ---
 const INITIAL_DATA = {
   users: {
     "admin": { code: "admin", pass: "admin123", role: "admin", name: "Manager" },
@@ -415,24 +408,33 @@ const INITIAL_DATA = {
   records: {}
 };
 
+// ดึงการ Login ค้างไว้จาก localStorage เพื่อแก้ปัญหา Refresh แล้วเด้ง
+const savedUser = JSON.parse(localStorage.getItem('uno_ot_user') || 'null');
+
 const state = {
   db: INITIAL_DATA,
-  currentUser: null,
-  activeTab: "entry",
+  currentUser: savedUser,
+  activeTab: savedUser ? (savedUser.role === "admin" ? "entry" : "my_ot") : "entry",
   parsedPreview: null,
   activeModalKey: null,
   showChangePassModal: false,
   filterBranch: "ทั้งหมด",
   filterPeriod: "",
+  empFilterPeriod: "",
   loginError: "",
   changePassError: "",
   isLoaded: false
 };
 
-// --- FIREBASE SYNC FUNCTIONS ---
+// Realtime Firebase Listener
 db.collection("ot_system").doc("app_data").onSnapshot((doc) => {
   if (doc.exists) {
     state.db = doc.data();
+    // Sync current user info if updated
+    if (state.currentUser && state.db.users[state.currentUser.code]) {
+      state.currentUser = state.db.users[state.currentUser.code];
+      localStorage.setItem('uno_ot_user', JSON.stringify(state.currentUser));
+    }
   } else {
     saveDatabaseToCloud(INITIAL_DATA);
   }
@@ -446,7 +448,7 @@ function saveDatabaseToCloud(newData) {
     .catch((error) => alert("Error saving to Cloud: " + error.message));
 }
 
-// --- CALCULATION HELPER FUNCTIONS ---
+// Helper Functions
 function toMins(hhmm) {
   if (!hhmm) return null;
   const match = hhmm.trim().match(/^(\d{1,2}):(\d{2})$/);
@@ -564,7 +566,7 @@ function escapeHtml(s) {
   return String(s || '').replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
 
-// --- RENDERING VIEWS ---
+// UI Rendering Logic
 function renderUserBadge() {
   const container = document.getElementById("userBadgeArea");
   if (!state.currentUser) { container.innerHTML = ""; return; }
@@ -577,6 +579,7 @@ function renderUserBadge() {
   `;
   document.getElementById("logoutBtn").onclick = () => {
     state.currentUser = null;
+    localStorage.removeItem('uno_ot_user');
     state.loginError = "";
     render();
   };
@@ -615,6 +618,7 @@ function renderLogin() {
 
     if (user && user.pass === pass) {
       state.currentUser = user;
+      localStorage.setItem('uno_ot_user', JSON.stringify(user));
       state.loginError = "";
       state.activeTab = user.role === "admin" ? "entry" : "my_ot";
       render();
@@ -636,7 +640,8 @@ function renderMainApp() {
     { id: "summary", label: "สรุปผล", icon: "summary" },
     { id: "settings", label: "ตั้งค่า", icon: "settings" }
   ] : [
-    { id: "my_ot", label: "OT ของฉัน", icon: "user" }
+    { id: "my_ot", label: "OT ของฉัน", icon: "user" },
+    { id: "my_settings", label: "ตั้งค่า", icon: "settings" }
   ];
 
   bottomNav.style.display = "flex";
@@ -655,6 +660,7 @@ function renderMainApp() {
   else if (state.activeTab === "summary") renderSummaryTab(container);
   else if (state.activeTab === "settings") renderSettingsTab(container);
   else if (state.activeTab === "my_ot") renderEmployeeView(container);
+  else if (state.activeTab === "my_settings") renderEmployeeSettingsTab(container);
 }
 
 function switchTab(tabId) {
@@ -662,7 +668,7 @@ function switchTab(tabId) {
   render();
 }
 
-// --- TABS ---
+// Entry Tab
 function renderEntryTab(container) {
   container.innerHTML = `
     <div class="card">
@@ -767,7 +773,7 @@ function renderRecordsTab(container) {
                 <p class="user-meta-sub">พนักงาน ${rows.length} คน</p>
               </div>
               <div style="display:flex; align-items:center; gap:8px;">
-                <span class="badge badge-ot">${formatOT(otSum)} HRS</span>
+                <span class="badge ${otSum > 0 ? 'badge-ot' : 'badge-off'}">${formatOT(otSum)} HRS</span>
                 <button class="btn-icon" style="color:var(--brand-red);" onclick="event.stopPropagation(); deleteRecord('${key}');">${ICONS.trash}</button>
               </div>
             </div>
@@ -791,6 +797,7 @@ function openDetailModal(key) {
   renderModal();
 }
 
+// Admin Summary Tab (สำหรับใครไม่มี OT ให้ใช้สีอื่น)
 function renderSummaryTab(container) {
   const periodMap = {};
   const branchSet = new Set(["ทั้งหมด"]);
@@ -864,13 +871,15 @@ function renderSummaryTab(container) {
               <p class="user-meta-sub">ทำ ${s.workDays} วัน | หยุด ${s.offDays} วัน</p>
             </div>
           </div>
-          <span class="badge badge-ot">${formatOT(s.otHours)} HRS</span>
+          <!-- สำหรับใครไม่มี ชม OT ให้ใช้ badge สีอื่น (badge-off) -->
+          <span class="badge ${s.otHours > 0 ? 'badge-ot' : 'badge-off'}">${formatOT(s.otHours)} HRS</span>
         </div>
       `).join("")}
     </div>
   `;
 }
 
+// Admin Settings Tab
 function renderSettingsTab(container) {
   const shifts = state.db.shifts || [];
   const emps = Object.values(state.db.employees || {});
@@ -965,20 +974,35 @@ function removeEmployee(code) {
   }
 }
 
-// --- EMPLOYEE VIEW ---
+// EMPLOYEE VIEW (เพิ่ม Filter รอบเวลา)
 function renderEmployeeView(container) {
   const code = state.currentUser.code;
   const name = state.currentUser.name;
+
+  const periodMap = { "all": "ทั้งหมด" };
+  Object.keys(state.db.records || {}).forEach(k => {
+    const [, ymd] = k.split("|");
+    const p = calculatePayCycle(ymd);
+    periodMap[p.key] = p.label;
+  });
+
+  const periodKeys = Object.keys(periodMap).reverse();
+  if (!state.empFilterPeriod) state.empFilterPeriod = "all";
 
   let totalOt = 0;
   const history = [];
 
   Object.entries(state.db.records || {}).forEach(([key, rows]) => {
     const [branch, ymd] = key.split("|");
-    const record = rows.find(r => r.code === code);
-    if (record) {
-      history.push({ ymd, branch, ...record });
-      totalOt += (record.otHours || 0);
+    const p = calculatePayCycle(ymd);
+    
+    // Check Filter รอบเวลา
+    if (state.empFilterPeriod === "all" || state.empFilterPeriod === p.key) {
+      const record = rows.find(r => r.code === code);
+      if (record) {
+        history.push({ ymd, branch, ...record });
+        totalOt += (record.otHours || 0);
+      }
     }
   });
 
@@ -988,16 +1012,25 @@ function renderEmployeeView(container) {
     <div class="metric-card">
       <div class="metric-header">
         <span class="metric-title">ACCUMULATED OVERTIME</span>
-        <button class="btn btn-secondary btn-sm" onclick="openChangePasswordModal()">${ICONS.key} PASS</button>
+        <span class="badge badge-ot">EMPLOYEE</span>
       </div>
       <div class="metric-val">${formatOT(totalOt)} <span style="font-size:16px; font-weight:500;">HRS</span></div>
+    </div>
+
+    <div class="card">
+      <div class="field" style="margin-bottom:0;">
+        <label>เลือกรอบเวลา</label>
+        <select onchange="state.empFilterPeriod=this.value; render();">
+          ${periodKeys.map(k => `<option value="${k}" ${k===state.empFilterPeriod?'selected':''}>${periodMap[k]}</option>`).join("")}
+        </select>
+      </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <div class="card-title">${ICONS.user} ประวัติการทำงาน: ${escapeHtml(name)}</div>
       </div>
-      ${history.length === 0 ? `<div style="text-align:center; padding:24px; color:var(--ink-secondary);">ไม่มีข้อมูลประวัติ</div>` : 
+      ${history.length === 0 ? `<div style="text-align:center; padding:24px; color:var(--ink-secondary);">ไม่มีข้อมูลประวัติในรอบเวลานี้</div>` : 
         history.map(h => `
           <div class="list-item">
             <div>
@@ -1017,18 +1050,72 @@ function renderEmployeeView(container) {
   `;
 }
 
-function openChangePasswordModal() {
-  state.showChangePassModal = true;
-  state.changePassError = "";
-  renderModal();
+// EMPLOYEE SETTINGS TAB (เพิ่มเมนูย้ายการเปลี่ยนรหัสผ่านเข้ามาที่นี่)
+function renderEmployeeSettingsTab(container) {
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">${ICONS.key} เปลี่ยนรหัสผ่าน</div>
+      </div>
+      <form id="empChangePassForm">
+        <div class="field">
+          <label>รหัสผ่านปัจจุบัน</label>
+          <input type="password" id="oldPass" required placeholder="••••••••">
+        </div>
+        <div class="field">
+          <label>รหัสผ่านใหม่</label>
+          <input type="password" id="newPass" required placeholder="••••••••">
+        </div>
+        <div class="field">
+          <label>ยืนยันรหัสผ่านใหม่</label>
+          <input type="password" id="confirmPass" required placeholder="••••••••">
+        </div>
+        
+        ${state.changePassError ? `<p style="color:var(--brand-red); font-size:12px; margin-top:0; margin-bottom:12px;">${escapeHtml(state.changePassError)}</p>` : ''}
+        
+        <button type="submit" class="btn btn-brand" style="width:100%; margin-top:10px;">บันทึกรหัสผ่านใหม่</button>
+      </form>
+    </div>
+  `;
+
+  document.getElementById("empChangePassForm").onsubmit = (e) => {
+    e.preventDefault();
+    const oldPass = document.getElementById("oldPass").value.trim();
+    const newPass = document.getElementById("newPass").value.trim();
+    const confirmPass = document.getElementById("confirmPass").value.trim();
+    const user = (state.db.users || {})[state.currentUser.code];
+
+    if (oldPass !== user.pass) {
+      state.changePassError = "รหัสผ่านปัจจุบันไม่ถูกต้อง";
+      render();
+      return;
+    }
+
+    if (newPass.length < 4) {
+      state.changePassError = "รหัสผ่านใหม่ต้องมีอย่างน้อย 4 ตัวอักษร";
+      render();
+      return;
+    }
+
+    if (newPass !== confirmPass) {
+      state.changePassError = "รหัสผ่านใหม่และการยืนยันไม่ตรงกัน";
+      render();
+      return;
+    }
+
+    const nextUsers = { ...(state.db.users || {}) };
+    nextUsers[user.code].pass = newPass;
+    state.currentUser.pass = newPass;
+    localStorage.setItem('uno_ot_user', JSON.stringify(state.currentUser));
+    state.changePassError = "";
+    saveDatabaseToCloud({ ...state.db, users: nextUsers });
+    alert("เปลี่ยนรหัสผ่านเรียบร้อยแล้ว");
+    render();
+  };
 }
 
 function renderModal() {
   const modalArea = document.getElementById("modalArea");
-  if (state.showChangePassModal) {
-    renderChangePasswordModal(modalArea);
-    return;
-  }
 
   if (!state.activeModalKey || !state.db.records[state.activeModalKey]) {
     modalArea.innerHTML = "";
@@ -1058,7 +1145,7 @@ function renderModal() {
                   <p class="user-meta-sub">${r.timeIn || '-'}${r.timeOut ? ' - ' + r.timeOut : ''}</p>
                 </div>
               </div>
-              <span class="badge badge-ot">${formatOT(r.otHours)} HRS</span>
+              <span class="badge ${r.otHours > 0 ? 'badge-ot' : 'badge-off'}">${formatOT(r.otHours)} HRS</span>
             </div>
           `).join("")}
         </div>
@@ -1076,76 +1163,7 @@ function closeModal(e) {
   }
 }
 
-function renderChangePasswordModal(modalArea) {
-  modalArea.innerHTML = `
-    <div class="modal-overlay" onclick="closeModal(event)">
-      <div class="modal-box" onclick="event.stopPropagation()">
-        <div class="card-header">
-          <div class="card-title">${ICONS.key} เปลี่ยนรหัสผ่าน</div>
-          <button class="btn-icon" onclick="closeModal()">${ICONS.x}</button>
-        </div>
-        
-        <form id="changePassForm">
-          <div class="field">
-            <label>รหัสผ่านปัจจุบัน</label>
-            <input type="password" id="oldPass" required placeholder="••••••••">
-          </div>
-          <div class="field">
-            <label>รหัสผ่านใหม่</label>
-            <input type="password" id="newPass" required placeholder="••••••••">
-          </div>
-          <div class="field">
-            <label>ยืนยันรหัสผ่านใหม่</label>
-            <input type="password" id="confirmPass" required placeholder="••••••••">
-          </div>
-          
-          ${state.changePassError ? `<p style="color:var(--brand-red); font-size:12px; margin-top:0; margin-bottom:12px;">${escapeHtml(state.changePassError)}</p>` : ''}
-          
-          <div style="display:flex; gap:8px; margin-top:20px;">
-            <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal()">CANCEL</button>
-            <button type="submit" class="btn btn-brand" style="flex:1;">SAVE</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  `;
-
-  document.getElementById("changePassForm").onsubmit = (e) => {
-    e.preventDefault();
-    const oldPass = document.getElementById("oldPass").value.trim();
-    const newPass = document.getElementById("newPass").value.trim();
-    const confirmPass = document.getElementById("confirmPass").value.trim();
-    const user = (state.db.users || {})[state.currentUser.code];
-
-    if (oldPass !== user.pass) {
-      state.changePassError = "รหัสผ่านปัจจุบันไม่ถูกต้อง";
-      renderModal();
-      return;
-    }
-
-    if (newPass.length < 4) {
-      state.changePassError = "รหัสผ่านใหม่ต้องมีอย่างน้อย 4 ตัวอักษร";
-      renderModal();
-      return;
-    }
-
-    if (newPass !== confirmPass) {
-      state.changePassError = "รหัสผ่านใหม่และการยืนยันไม่ตรงกัน";
-      renderModal();
-      return;
-    }
-
-    const nextUsers = { ...(state.db.users || {}) };
-    nextUsers[user.code].pass = newPass;
-    state.currentUser.pass = newPass;
-    state.showChangePassModal = false;
-    state.changePassError = "";
-    saveDatabaseToCloud({ ...state.db, users: nextUsers });
-    alert("เปลี่ยนรหัสผ่านเรียบร้อยแล้ว");
-  };
-}
-
-// --- MAIN RENDER LOGIC ---
+// MAIN RENDER LOGIC
 function render() {
   if (!state.isLoaded) {
     document.getElementById("mainContent").innerHTML = `
@@ -1165,7 +1183,6 @@ function render() {
   }
 }
 
-// Initial Call
 render();
 </script>
 </body>
