@@ -6,7 +6,7 @@
 <title>UNO! OT Tracker Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <!-- Firebase SDK (Compat Version) -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -14,29 +14,35 @@
 
 <style>
   :root {
+    /* Light Mode Color Palette */
+    --bg-base: #F8F9FA;
+    --bg-surface: #F1F3F5;
+    --bg-card: #FFFFFF;
+    --bg-input: #FFFFFF;
+    
     --brand-red: #E33B26;
-    --brand-red-dark: #C22B18;
-    --brand-black: #121212;
-    --brand-dark-gray: #1E1E1E;
-    --brand-gray-bg: #F4F4F6;
-    --panel-bg: #FFFFFF;
+    --brand-red-hover: #C92A17;
+    --brand-black: #1A1A1A;
     
-    --ink-primary: #121212;
-    --ink-secondary: #666666;
-    --ink-muted: #8E8E93;
+    --ink-primary: #1F2937;
+    --ink-secondary: #6B7280;
+    --ink-muted: #9CA3AF;
     
-    --pill-ot-bg: #E33B26;
-    --pill-ot-ink: #FFFFFF;
-    --pill-work-bg: #121212;
-    --pill-work-ink: #FFFFFF;
-    --pill-off-bg: #E5E5EA;
-    --pill-off-ink: #666666;
-    --pill-sick-bg: #FFF0F0;
-    --pill-sick-ink: #E33B26;
+    --pill-ot-bg: #FEE2E2;
+    --pill-ot-ink: #DC2626;
+    --pill-work-bg: #E5E7EB;
+    --pill-work-ink: #374151;
+    --pill-off-bg: #F3F4F6;
+    --pill-off-ink: #9CA3AF;
+    --pill-sick-bg: #FEE2E2;
+    --pill-sick-ink: #EF4444;
     
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
-    --shadow-float: 0 12px 32px rgba(18,18,18,0.2);
+    --border-color: #E5E7EB;
+    --border-highlight: #FCA5A5;
+    
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+    --shadow-float: 0 10px 25px rgba(0,0,0,0.1);
     --radius-card: 16px;
     --radius-btn: 10px;
     --radius-pill: 99px;
@@ -48,7 +54,7 @@
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    background: var(--brand-gray-bg);
+    background: var(--bg-base);
     color: var(--ink-primary);
     font-family: 'Sarabun', sans-serif;
     font-size: 14px;
@@ -69,32 +75,35 @@
   }
 
   .brand-banner {
-    background: var(--brand-red);
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
     margin: 0 -16px 20px;
-    padding: 24px 20px 20px;
-    color: #FFFFFF;
+    padding: 20px 20px 18px;
+    color: var(--ink-primary);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 4px 12px rgba(227, 59, 38, 0.25);
+    box-shadow: var(--shadow-sm);
   }
   .brand-logo-text {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
     line-height: 1;
     margin: 0;
+    color: var(--brand-red);
   }
   .brand-tag {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    background: #FFFFFF;
-    color: var(--brand-black);
-    padding: 3px 6px;
+    background: var(--brand-red);
+    color: #FFFFFF;
+    padding: 2px 6px;
     border-radius: 3px;
     display: inline-block;
     margin-top: 4px;
@@ -104,15 +113,15 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--bg-surface);
     padding: 6px 12px;
     border-radius: var(--radius-pill);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-color);
   }
   .user-badge span {
     font-size: 12px;
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--ink-primary);
   }
 
   .field { margin-bottom: 16px; }
@@ -127,21 +136,20 @@
   }
   input[type=text], input[type=password], input[type=time], select, textarea {
     width: 100%;
-    border: 1px solid #E5E5EA;
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-btn);
     padding: 12px 14px;
     font-family: inherit;
     font-size: 14px;
     color: var(--ink-primary);
-    background: #FFFFFF;
+    background: var(--bg-input);
     transition: all 0.2s ease;
   }
   input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--brand-black);
-    box-shadow: 0 0 0 3px rgba(18, 18, 18, 0.1);
+    border-color: var(--brand-red);
+    box-shadow: 0 0 0 3px rgba(227, 59, 38, 0.1);
   }
-  textarea { height: 110px; resize: none; font-family: monospace; font-size: 12.5px; }
 
   .btn {
     display: inline-flex;
@@ -158,19 +166,19 @@
     transition: all 0.2s ease;
     text-decoration: none;
   }
-  .btn-primary { background: var(--brand-black); color: #FFFFFF; }
-  .btn-primary:hover { background: var(--brand-dark-gray); }
+  .btn-primary { background: var(--bg-card); color: var(--ink-primary); border: 1px solid var(--border-color); }
+  .btn-primary:hover { background: var(--bg-surface); }
   .btn-brand { background: var(--brand-red); color: #FFFFFF; }
-  .btn-brand:hover { background: var(--brand-red-dark); }
-  .btn-secondary { background: #E5E5EA; color: var(--ink-primary); }
-  .btn-secondary:hover { background: #D1D1D6; }
+  .btn-brand:hover { background: var(--brand-red-hover); }
+  .btn-secondary { background: var(--pill-work-bg); color: var(--ink-primary); }
+  .btn-secondary:hover { background: #D1D5DB; }
   .btn-sm { padding: 6px 12px; font-size: 12px; }
   .btn-icon {
     width: 34px;
     height: 34px;
     border-radius: 8px;
-    border: 1px solid #E5E5EA;
-    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
     color: var(--ink-primary);
     cursor: pointer;
     display: inline-flex;
@@ -178,16 +186,16 @@
     justify-content: center;
     transition: all 0.2s ease;
   }
-  .btn-icon:hover { background: var(--brand-gray-bg); }
+  .btn-icon:hover { background: var(--bg-surface); border-color: var(--ink-muted); }
   .btn-icon svg { width: 16px; height: 16px; }
 
   .card {
-    background: var(--panel-bg);
+    background: var(--bg-card);
     border-radius: var(--radius-card);
     padding: 20px;
     margin-bottom: 16px;
     box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(0,0,0,0.04);
+    border: 1px solid var(--border-color);
   }
   .card-header {
     display: flex;
@@ -197,23 +205,24 @@
   }
   .card-title {
     font-family: 'Space Grotesk', 'Sarabun', sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--brand-black);
+    color: var(--ink-primary);
     text-transform: uppercase;
     letter-spacing: -0.3px;
   }
 
   .metric-card {
-    background: var(--brand-black);
-    color: #FFFFFF;
+    background: #FFFFFF;
+    color: var(--ink-primary);
     border-radius: var(--radius-card);
     padding: 20px;
     margin-bottom: 16px;
     box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
     position: relative;
   }
   .metric-header {
@@ -226,7 +235,7 @@
     font-family: 'Space Grotesk', sans-serif;
     font-size: 11px;
     font-weight: 700;
-    color: var(--ink-muted);
+    color: var(--ink-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
   }
@@ -235,8 +244,8 @@
     font-size: 38px;
     font-weight: 700;
     line-height: 1;
-    margin-bottom: 12px;
-    color: #FFFFFF;
+    margin-bottom: 4px;
+    color: var(--brand-red);
   }
 
   .list-item {
@@ -244,7 +253,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 14px;
-    background: var(--brand-gray-bg);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-btn);
     margin-bottom: 8px;
   }
@@ -253,7 +263,7 @@
     width: 36px;
     height: 36px;
     border-radius: 8px;
-    background: var(--brand-black);
+    background: var(--brand-red);
     color: #FFFFFF;
     display: flex;
     align-items: center;
@@ -262,7 +272,7 @@
     font-weight: 700;
     font-size: 14px;
   }
-  .user-meta-name { font-weight: 600; font-size: 14px; margin: 0; color: var(--brand-black); }
+  .user-meta-name { font-weight: 600; font-size: 14px; margin: 0; color: var(--ink-primary); }
   .user-meta-sub { font-size: 11px; color: var(--ink-secondary); margin: 0; }
 
   .badge {
@@ -278,7 +288,7 @@
   .badge-work { background: var(--pill-work-bg); color: var(--pill-work-ink); }
   .badge-off { background: var(--pill-off-bg); color: var(--pill-off-ink); }
   .badge-sick { background: var(--pill-sick-bg); color: var(--pill-sick-ink); }
-  .badge-ot { background: var(--pill-ot-bg); color: var(--pill-ot-ink); }
+  .badge-ot { background: var(--pill-ot-bg); color: var(--pill-ot-ink); border: 1px solid var(--border-highlight); }
 
   nav.bottom-nav {
     position: fixed;
@@ -287,7 +297,9 @@
     transform: translateX(-50%);
     width: calc(100% - 32px);
     max-width: 408px;
-    background: var(--brand-black);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-pill);
     padding: 6px;
     display: flex;
@@ -299,7 +311,7 @@
   nav.bottom-nav button {
     border: none;
     background: transparent;
-    color: rgba(255,255,255,0.5);
+    color: var(--ink-secondary);
     padding: 8px 16px;
     border-radius: var(--radius-pill);
     cursor: pointer;
@@ -315,7 +327,8 @@
   nav.bottom-nav button svg { width: 18px; height: 18px; stroke-width: 2.2; }
 
   .login-box {
-    background: var(--panel-bg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-card);
     padding: 28px 20px;
     box-shadow: var(--shadow-md);
@@ -324,7 +337,7 @@
 
   .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(4px);
     display: flex; align-items: flex-end; justify-content: center;
     z-index: 1000;
@@ -333,7 +346,8 @@
     .modal-overlay { align-items: center; padding: 20px; }
   }
   .modal-box {
-    background: var(--panel-bg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-top-left-radius: var(--radius-card);
     border-top-right-radius: var(--radius-card);
     width: 100%; max-width: 440px;
@@ -363,8 +377,10 @@
 
 <script>
 // ==========================================
-// FIREBASE CONFIGURATION & INITIAL SETUP
+// CONFIGURATIONS (RENDER + FIREBASE)
 // ==========================================
+const RENDER_BACKEND_URL = "https://your-render-app-name.onrender.com";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDTxQRCaJcf-NpVw2ULDJtjsD0tKlKkEUg",
   authDomain: "uno-coffee-ot.firebaseapp.com",
@@ -379,10 +395,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const ICONS = {
-  upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
   list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
   summary: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
   user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
   logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>',
@@ -413,8 +428,7 @@ const savedUser = JSON.parse(localStorage.getItem('uno_ot_user') || 'null');
 const state = {
   db: INITIAL_DATA,
   currentUser: savedUser,
-  activeTab: savedUser ? (savedUser.role === "admin" ? "entry" : "my_ot") : "entry",
-  parsedPreview: null,
+  activeTab: savedUser ? (savedUser.role === "admin" ? "records" : "my_ot") : "records",
   activeModalKey: null,
   showChangePassModal: false,
   filterBranch: "ทั้งหมด",
@@ -425,7 +439,7 @@ const state = {
   isLoaded: false
 };
 
-// Realtime Firebase Listener (ปรับปรุงเพื่อป้องกันปัญหา Bug DB รีเซ็ต)
+// Realtime Firebase Listener
 db.collection("ot_system").doc("app_data").onSnapshot((doc) => {
   if (doc.exists) {
     const cloudData = doc.data();
@@ -441,7 +455,6 @@ db.collection("ot_system").doc("app_data").onSnapshot((doc) => {
       localStorage.setItem('uno_ot_user', JSON.stringify(state.currentUser));
     }
   } else {
-    // สร้าง Document ในกรณีที่ยังไม่มีบน Firebase เท่านั้น
     console.warn("No database document found. Initializing Cloud Data...");
     db.collection("ot_system").doc("app_data").set(INITIAL_DATA)
       .catch(err => console.error("Cloud Init Error:", err));
@@ -462,27 +475,11 @@ function saveDatabaseToCloud(newData) {
 }
 
 // Helper Functions
-function toMins(hhmm) {
-  if (!hhmm) return null;
-  const match = hhmm.trim().match(/^(\d{1,2}):(\d{2})$/);
-  return match ? parseInt(match[1], 10) * 60 + parseInt(match[2], 10) : null;
-}
-
-function minsToHours(mins) { return Math.round((mins / 60) * 100) / 100; }
-
 function formatOT(decimalHours) {
   const totalMin = Math.round((decimalHours || 0) * 60);
   const h = Math.floor(totalMin / 60);
   const m = totalMin % 60;
   return `${h}.${String(m).padStart(2, "0")}`;
-}
-
-function parseThaiDate(str) {
-  const match = str.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
-  if (!match) return null;
-  let [, d, mo, y] = match.map(Number);
-  if (y < 100) y += 2000;
-  return { d, mo, y };
 }
 
 function formatDateObj({ d, mo, y }) {
@@ -511,70 +508,6 @@ function calculatePayCycle(ymdString) {
   };
 }
 
-function matchNearestShift(shifts, inMin) {
-  if (inMin == null) return null;
-  let selected = null, minDiff = Infinity;
-  for (const s of shifts) {
-    const sStart = toMins(s.start);
-    if (sStart == null) continue;
-    const diff = Math.abs(sStart - inMin);
-    if (diff < minDiff) { minDiff = diff; selected = s; }
-  }
-  return selected;
-}
-
-function parseShiftText(rawText) {
-  const text = rawText.trim();
-  if (/^off$/i.test(text) || /^หยุด$/.test(text)) return { status: "off" };
-  if (/ป่วย|ลาป่วย/.test(text)) return { status: "sick" };
-  const rangeMatch = text.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
-  if (rangeMatch) return { status: "work", timeIn: rangeMatch[1], timeOut: rangeMatch[2] };
-  return { status: "work", timeIn: null, timeOut: null };
-}
-
-function calculateOT(row, shifts) {
-  if (row.status !== "work") return { normalHours: 0, otHours: 0 };
-  const inMin = toMins(row.timeIn);
-  const outMin = toMins(row.timeOut);
-  if (inMin == null || outMin == null) return { normalHours: 0, otHours: 0 };
-
-  const shift = matchNearestShift(shifts, inMin);
-  let otMin = 0;
-  if (shift) {
-    const shiftEnd = toMins(shift.end);
-    if (shiftEnd != null && outMin > shiftEnd) otMin = outMin - shiftEnd;
-  }
-  const breakMin = shift ? (shift.breakMin || 0) : 0;
-  const workedMin = outMin - inMin;
-  return {
-    normalHours: minsToHours(Math.max(workedMin - otMin - breakMin, 0)),
-    otHours: minsToHours(Math.max(otMin, 0))
-  };
-}
-
-function processReportText(text, shifts) {
-  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-  let branch = "", dateObj = null;
-  const rows = [];
-
-  for (const line of lines) {
-    const bMatch = line.match(/สาขา\s*([A-Za-zก-๙0-9_-]+)/);
-    if (bMatch) branch = bMatch[1].trim();
-    const dMatch = line.match(/วันที่\s*(\d{1,2}\/\d{1,2}\/\d{2,4})/);
-    if (dMatch) dateObj = parseThaiDate(dMatch[1]);
-
-    const rMatch = line.match(/^\d+[.)]\s*(\d{4,})\s+(\S+)\s+(.*)$/);
-    if (rMatch) {
-      const [, code, name, rest] = rMatch;
-      const parsed = parseShiftText(rest);
-      const row = { code, name, ...parsed };
-      const calc = calculateOT(row, shifts);
-      rows.push({ ...row, ...calc });
-    }
-  }
-  return { branch, dateObj, rows };
-}
-
 function escapeHtml(s) {
   return String(s || '').replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
@@ -587,7 +520,7 @@ function renderUserBadge() {
   container.innerHTML = `
     <div class="user-badge">
       <span>${escapeHtml(state.currentUser.name)}</span>
-      <button class="btn-icon" id="logoutBtn" style="width:24px; height:24px; background:transparent; border:none; color:#FFF;" title="ออกจากระบบ">${ICONS.logout}</button>
+      <button class="btn-icon" id="logoutBtn" style="width:24px; height:24px; background:transparent; border:none; color:var(--ink-secondary);" title="ออกจากระบบ">${ICONS.logout}</button>
     </div>
   `;
   document.getElementById("logoutBtn").onclick = () => {
@@ -605,7 +538,7 @@ function renderLogin() {
 
   main.innerHTML = `
     <div class="login-box">
-      <h2 style="font-family:'Space Grotesk'; font-size: 20px; font-weight:700; margin:0 0 6px; text-transform:uppercase;">Sign In</h2>
+      <h2 style="font-family:'Space Grotesk'; font-size: 20px; font-weight:700; margin:0 0 6px; text-transform:uppercase; color:var(--ink-primary);">Sign In</h2>
       <p style="font-size: 13px; color: var(--ink-secondary); margin:0 0 20px;">เข้าสู่ระบบจัดการเวลาทำงาน UNO!</p>
       
       <form id="loginForm">
@@ -633,7 +566,7 @@ function renderLogin() {
       state.currentUser = user;
       localStorage.setItem('uno_ot_user', JSON.stringify(user));
       state.loginError = "";
-      state.activeTab = user.role === "admin" ? "entry" : "my_ot";
+      state.activeTab = user.role === "admin" ? "records" : "my_ot";
       render();
     } else {
       state.loginError = "รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง";
@@ -648,7 +581,6 @@ function renderMainApp() {
   const isAdmin = state.currentUser.role === "admin";
   
   const tabs = isAdmin ? [
-    { id: "entry", label: "บันทึก", icon: "upload" },
     { id: "records", label: "รายการ", icon: "list" },
     { id: "summary", label: "สรุปผล", icon: "summary" },
     { id: "settings", label: "ตั้งค่า", icon: "settings" }
@@ -668,8 +600,7 @@ function renderMainApp() {
   main.innerHTML = `<div id="tabContent"></div>`;
   const container = document.getElementById("tabContent");
 
-  if (state.activeTab === "entry") renderEntryTab(container);
-  else if (state.activeTab === "records") renderRecordsTab(container);
+  if (state.activeTab === "records") renderRecordsTab(container);
   else if (state.activeTab === "summary") renderSummaryTab(container);
   else if (state.activeTab === "settings") renderSettingsTab(container);
   else if (state.activeTab === "my_ot") renderEmployeeView(container);
@@ -679,92 +610,6 @@ function renderMainApp() {
 function switchTab(tabId) {
   state.activeTab = tabId;
   render();
-}
-
-// Entry Tab
-function renderEntryTab(container) {
-  container.innerHTML = `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">${ICONS.upload} บันทึกข้อมูลเวลาทำงาน</div>
-      </div>
-      <div class="field">
-        <label>ข้อความลงเวลาจาก Chat</label>
-        <textarea id="rawInput" placeholder="สาขา UNO-01&#10;วันที่ 21/08/26&#10;1. 200190 อาม 11:30 - 22:00&#10;2. 200211 แพร off"></textarea>
-      </div>
-      <button class="btn btn-brand" style="width:100%;" onclick="handleParseText()">ประมวลผลข้อมูล</button>
-    </div>
-    <div id="previewArea"></div>
-  `;
-
-  if (state.parsedPreview) renderPreviewSection(document.getElementById("previewArea"));
-}
-
-function handleParseText() {
-  const txt = document.getElementById("rawInput").value;
-  if (!txt.trim()) return;
-  state.parsedPreview = processReportText(txt, state.db.shifts || []);
-  render();
-}
-
-function renderPreviewSection(container) {
-  const p = state.parsedPreview;
-  const isValid = p.branch && p.dateObj;
-
-  container.innerHTML = `
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">ตรวจสอบก่อนบันทึก</div>
-        <span class="badge ${isValid ? 'badge-ot' : 'badge-sick'}">
-          ${isValid ? 'READY' : 'INCOMPLETE'}
-        </span>
-      </div>
-      <p style="font-size:12px; color:var(--ink-secondary); margin-top:0; margin-bottom:12px;">
-        สาขา: <b>${escapeHtml(p.branch || "ไม่ระบุ")}</b> | วันที่: <b>${p.dateObj ? formatDateObj(p.dateObj) : "ไม่ระบุ"}</b>
-      </p>
-
-      ${p.rows.map(r => `
-        <div class="list-item">
-          <div class="list-item-user">
-            <div class="avatar-circle">${escapeHtml(r.name.substring(0,1))}</div>
-            <div>
-              <p class="user-meta-name">${escapeHtml(r.name)}</p>
-              <p class="user-meta-sub">${r.timeIn || '-'}${r.timeOut ? ' - ' + r.timeOut : ''}</p>
-            </div>
-          </div>
-          <div style="text-align:right;">
-            <span class="badge ${r.status==='work'?'badge-work':r.status==='off'?'badge-off':'badge-sick'}">
-              ${r.status==='work'?'WORK':r.status==='off'?'OFF':'LEAVE'}
-            </span>
-            <div style="margin-top:4px;">${r.otHours > 0 ? `<span class="badge badge-ot">+${formatOT(r.otHours)} HRS</span>` : ''}</div>
-          </div>
-        </div>
-      `).join("")}
-
-      <button class="btn btn-primary" style="width:100%; margin-top:12px;" ${!isValid ? 'disabled' : ''} onclick="commitSaveData()">ยืนยันการบันทึก</button>
-    </div>
-  `;
-}
-
-function commitSaveData() {
-  const p = state.parsedPreview;
-  if (!p || !p.branch || !p.dateObj) return;
-
-  const key = `${p.branch}|${getDateKey(p.dateObj)}`;
-  const nextEmps = { ...(state.db.employees || {}) };
-  const nextUsers = { ...(state.db.users || {}) };
-
-  p.rows.forEach(r => {
-    nextEmps[r.code] = { code: r.code, name: r.name };
-    if (!nextUsers[r.code]) {
-      nextUsers[r.code] = { code: r.code, pass: "1234", role: "employee", name: r.name };
-    }
-  });
-
-  const nextRecords = { ...(state.db.records || {}), [key]: p.rows };
-  state.parsedPreview = null;
-  saveDatabaseToCloud({ ...state.db, employees: nextEmps, users: nextUsers, records: nextRecords });
-  alert("บันทึกข้อมูลเรียบร้อยแล้ว");
 }
 
 function renderRecordsTab(container) {
@@ -852,7 +697,7 @@ function renderSummaryTab(container) {
         <span class="metric-title">TOTAL OVERTIME</span>
         <span class="badge badge-ot">CYCLE 21-20</span>
       </div>
-      <div class="metric-val">${formatOT(totalOtPeriod)} <span style="font-size:16px; font-weight:500;">HRS</span></div>
+      <div class="metric-val">${formatOT(totalOtPeriod)} <span style="font-size:16px; font-weight:500; color:var(--ink-primary);">HRS</span></div>
     </div>
 
     <div class="card">
@@ -1022,7 +867,7 @@ function renderEmployeeView(container) {
         <span class="metric-title">ACCUMULATED OVERTIME</span>
         <span class="badge badge-ot">EMPLOYEE</span>
       </div>
-      <div class="metric-val">${formatOT(totalOt)} <span style="font-size:16px; font-weight:500;">HRS</span></div>
+      <div class="metric-val">${formatOT(totalOt)} <span style="font-size:16px; font-weight:500; color:var(--ink-primary);">HRS</span></div>
     </div>
 
     <div class="card">
@@ -1140,7 +985,7 @@ function renderModal() {
           <div class="card-title">รายละเอียดเวลาทำงาน</div>
           <button class="btn-icon" onclick="closeModal()">${ICONS.x}</button>
         </div>
-        <p style="font-size:12px; color:var(--ink-secondary); margin-top:0; margin-bottom:12px;">สาขา: <b>${escapeHtml(branch)}</b> | วันที่: <b>${ymd}</b></p>
+        <p style="font-size:12px; color:var(--ink-secondary); margin-top:0; margin-bottom:12px;">สาขา: <b style="color:var(--ink-primary);">${escapeHtml(branch)}</b> | วันที่: <b style="color:var(--ink-primary);">${ymd}</b></p>
         
         <div style="max-height: 50vh; overflow-y: auto;">
           ${rows.map(r => `
