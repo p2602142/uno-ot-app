@@ -408,7 +408,6 @@ const INITIAL_DATA = {
   records: {}
 };
 
-// ดึงการ Login ค้างไว้จาก localStorage เพื่อแก้ปัญหา Refresh แล้วเด้ง
 const savedUser = JSON.parse(localStorage.getItem('uno_ot_user') || 'null');
 
 const state = {
@@ -426,18 +425,32 @@ const state = {
   isLoaded: false
 };
 
-// Realtime Firebase Listener
+// Realtime Firebase Listener (ปรับปรุงเพื่อป้องกันปัญหา Bug DB รีเซ็ต)
 db.collection("ot_system").doc("app_data").onSnapshot((doc) => {
   if (doc.exists) {
-    state.db = doc.data();
-    // Sync current user info if updated
+    const cloudData = doc.data();
+    state.db = {
+      users: { ...INITIAL_DATA.users, ...(cloudData.users || {}) },
+      employees: { ...INITIAL_DATA.employees, ...(cloudData.employees || {}) },
+      shifts: cloudData.shifts || INITIAL_DATA.shifts,
+      records: cloudData.records || {}
+    };
+    
     if (state.currentUser && state.db.users[state.currentUser.code]) {
       state.currentUser = state.db.users[state.currentUser.code];
       localStorage.setItem('uno_ot_user', JSON.stringify(state.currentUser));
     }
   } else {
-    saveDatabaseToCloud(INITIAL_DATA);
+    // สร้าง Document ในกรณีที่ยังไม่มีบน Firebase เท่านั้น
+    console.warn("No database document found. Initializing Cloud Data...");
+    db.collection("ot_system").doc("app_data").set(INITIAL_DATA)
+      .catch(err => console.error("Cloud Init Error:", err));
+    state.db = INITIAL_DATA;
   }
+  state.isLoaded = true;
+  render();
+}, (error) => {
+  console.error("Firestore Listen Error: ", error);
   state.isLoaded = true;
   render();
 });
@@ -445,7 +458,7 @@ db.collection("ot_system").doc("app_data").onSnapshot((doc) => {
 function saveDatabaseToCloud(newData) {
   state.db = newData;
   db.collection("ot_system").doc("app_data").set(newData)
-    .catch((error) => alert("Error saving to Cloud: " + error.message));
+    .catch((error) => alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล: " + error.message));
 }
 
 // Helper Functions
@@ -797,7 +810,6 @@ function openDetailModal(key) {
   renderModal();
 }
 
-// Admin Summary Tab (สำหรับใครไม่มี OT ให้ใช้สีอื่น)
 function renderSummaryTab(container) {
   const periodMap = {};
   const branchSet = new Set(["ทั้งหมด"]);
@@ -871,7 +883,6 @@ function renderSummaryTab(container) {
               <p class="user-meta-sub">ทำ ${s.workDays} วัน | หยุด ${s.offDays} วัน</p>
             </div>
           </div>
-          <!-- สำหรับใครไม่มี ชม OT ให้ใช้ badge สีอื่น (badge-off) -->
           <span class="badge ${s.otHours > 0 ? 'badge-ot' : 'badge-off'}">${formatOT(s.otHours)} HRS</span>
         </div>
       `).join("")}
@@ -879,7 +890,6 @@ function renderSummaryTab(container) {
   `;
 }
 
-// Admin Settings Tab
 function renderSettingsTab(container) {
   const shifts = state.db.shifts || [];
   const emps = Object.values(state.db.employees || {});
@@ -974,7 +984,6 @@ function removeEmployee(code) {
   }
 }
 
-// EMPLOYEE VIEW (เพิ่ม Filter รอบเวลา)
 function renderEmployeeView(container) {
   const code = state.currentUser.code;
   const name = state.currentUser.name;
@@ -996,7 +1005,6 @@ function renderEmployeeView(container) {
     const [branch, ymd] = key.split("|");
     const p = calculatePayCycle(ymd);
     
-    // Check Filter รอบเวลา
     if (state.empFilterPeriod === "all" || state.empFilterPeriod === p.key) {
       const record = rows.find(r => r.code === code);
       if (record) {
@@ -1050,7 +1058,6 @@ function renderEmployeeView(container) {
   `;
 }
 
-// EMPLOYEE SETTINGS TAB (เพิ่มเมนูย้ายการเปลี่ยนรหัสผ่านเข้ามาที่นี่)
 function renderEmployeeSettingsTab(container) {
   container.innerHTML = `
     <div class="card">
