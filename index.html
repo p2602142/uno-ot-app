@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 <title>UNO! Employee Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -310,11 +310,582 @@
     box-shadow: var(--shadow-md);
     margin-top: 20px;
   }
+
+    /* ===== UNO! UI REFRESH ===== */
+    :root{
+      --bg-base:#f5f7fb; --bg-surface:#f8fafc; --bg-card:#fff; --bg-input:#fff;
+      --brand-red:#d92d20; --brand-red-hover:#b42318;
+      --ink-primary:#172033; --ink-secondary:#667085; --ink-muted:#98a2b3;
+      --border-color:#e4e7ec; --border-highlight:#fda29b;
+      --shadow-sm:0 1px 2px rgba(16,24,40,.04);
+      --shadow-md:0 8px 24px rgba(16,24,40,.07);
+      --shadow-float:0 12px 32px rgba(16,24,40,.14);
+      --radius-card:18px; --radius-btn:12px; --radius-pill:999px;
+    }
+    html{scroll-behavior:smooth}
+    body{
+      background:
+        radial-gradient(circle at 50% -10%,rgba(217,45,32,.08),transparent 34%),
+        var(--bg-base);
+    }
+    .app-container{max-width:760px;padding:0 18px 112px}
+    .brand-banner{
+      position:sticky;top:0;z-index:50;
+      margin:0 -18px 22px;padding:16px 18px;
+      border:0;border-bottom:1px solid rgba(228,231,236,.9);
+      border-radius:0 0 20px 20px;
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      box-shadow:0 4px 18px rgba(16,24,40,.05);
+    }
+    .brand-logo-text{font-size:26px;letter-spacing:-1px}
+    .brand-tag{font-size:8px;letter-spacing:1.6px;padding:3px 7px;border-radius:5px}
+    .user-badge{padding:5px 7px 5px 12px;gap:7px;background:#f2f4f7}
+    .user-badge span{font-size:12px}
+    .field{margin-bottom:18px}
+    .field label{font-size:11px;letter-spacing:.35px;color:#475467}
+    input[type=text],input[type=password],select{
+      min-height:48px;padding:12px 14px;border-radius:12px;
+      border-color:#d9dee8;background:#fff;
+      box-shadow:0 1px 2px rgba(16,24,40,.02);
+    }
+    input:focus,select:focus{border-color:#d92d20;box-shadow:0 0 0 4px rgba(217,45,32,.10)}
+    .btn{min-height:46px;border-radius:12px;letter-spacing:.1px;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+    .btn-brand{box-shadow:0 6px 14px rgba(217,45,32,.18)}
+    .btn-brand:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(217,45,32,.23)}
+    .btn:active{transform:translateY(0) scale(.98)}
+    .btn-icon{width:38px;height:38px;border-radius:10px}
+    .card,.metric-card,.login-box{
+      border-color:#e4e7ec;border-radius:18px;box-shadow:var(--shadow-md)
+    }
+    .card{padding:20px;margin-bottom:14px}
+    .card-header{margin-bottom:16px}
+    .card-title{font-size:15px;letter-spacing:-.2px}
+    .card-title svg{width:18px;height:18px;stroke-width:2.2}
+    .metric-card{
+      position:relative;overflow:hidden;padding:22px;margin-bottom:14px;
+      background:linear-gradient(145deg,#fff 0%,#fff 70%,#fff7f6 100%);
+    }
+    .metric-card:after{
+      content:"";position:absolute;width:100px;height:100px;right:-35px;top:-35px;
+      border-radius:50%;background:rgba(217,45,32,.07);pointer-events:none
+    }
+    .metric-title{font-size:10px;letter-spacing:1.2px}
+    .metric-val{font-size:42px;letter-spacing:-1.5px}
+    .list-item{
+      padding:13px 14px;margin-bottom:8px;border-radius:13px;
+      background:#fff;border-color:#eaecf0;box-shadow:0 1px 2px rgba(16,24,40,.025)
+    }
+    .list-item:last-child{margin-bottom:0}
+    .user-meta-name{font-size:14px}
+    .user-meta-sub{font-size:12px;margin-top:2px}
+    .badge{padding:5px 10px;border-radius:999px;font-size:10px;letter-spacing:.2px}
+    nav.bottom-nav{
+      bottom:max(14px,env(safe-area-inset-bottom));width:calc(100% - 28px);max-width:520px;
+      padding:6px;border-radius:18px;background:rgba(255,255,255,.94);
+      box-shadow:0 12px 35px rgba(16,24,40,.16)
+    }
+    nav.bottom-nav button{
+      flex:1;min-height:48px;justify-content:center;padding:8px 12px;border-radius:13px;
+      font-family:'Sarabun',sans-serif;font-size:12px
+    }
+    nav.bottom-nav button.active{box-shadow:0 4px 10px rgba(217,45,32,.20)}
+    nav.bottom-nav button svg{width:19px;height:19px}
+    .login-box{max-width:430px;margin:32px auto 0;padding:30px 24px}
+    .login-box h2{font-size:22px!important}
+    @media (min-width:700px){
+      .app-container{max-width:900px}
+      .brand-banner{margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px}
+      .app-container{padding-left:24px;padding-right:24px}
+      .card,.metric-card{padding:22px}
+      #tabContent{max-width:720px;margin:0 auto;width:100%}
+    }
+    @media (max-width:480px){
+      .app-container{padding-left:14px;padding-right:14px;padding-bottom:104px}
+      .brand-banner{margin-left:-14px;margin-right:-14px;padding:14px 15px;margin-bottom:16px}
+      .brand-logo-text{font-size:24px}
+      .user-badge span{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .card,.metric-card{padding:17px}
+      .metric-val{font-size:36px}
+      .login-box{margin-top:20px;padding:24px 18px}
+      nav.bottom-nav{width:calc(100% - 20px)}
+      nav.bottom-nav button span{font-size:11px}
+    }
+    @media (prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *,*:before,*:after{transition:none!important;animation:none!important}
+    }
+
 </style>
+
+<style id="production-ui">
+/* ===== PRODUCTION UI / SaaS HR PORTAL ===== */
+:root{
+  --ui-bg:#f5f7fb;
+  --ui-surface:rgba(255,255,255,.88);
+  --ui-surface-solid:#fff;
+  --ui-text:#172033;
+  --ui-sub:#667085;
+  --ui-muted:#98a2b3;
+  --ui-border:#e7eaf0;
+  --ui-red:#e54832;
+  --ui-red-dark:#c93622;
+  --ui-red-soft:#fff1ee;
+  --ui-green:#12b76a;
+  --ui-green-soft:#ecfdf3;
+  --ui-blue:#2e90fa;
+  --ui-blue-soft:#eff8ff;
+  --ui-shadow:0 8px 30px rgba(16,24,40,.07);
+  --ui-shadow-hover:0 16px 40px rgba(16,24,40,.11);
+  --ui-radius:18px;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 10% 0%,rgba(229,72,50,.055),transparent 28%),
+    radial-gradient(circle at 95% 12%,rgba(46,144,250,.045),transparent 25%),
+    var(--ui-bg);
+  color:var(--ui-text);
+  overflow-x:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:linear-gradient(rgba(16,24,40,.018) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(16,24,40,.018) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.35),transparent 70%);
+  z-index:-1;
+}
+
+.app-container{
+  max-width:1180px;
+  padding:0 24px 110px;
+  animation:pageIn .55s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.brand-banner{
+  position:sticky;
+  top:0;
+  z-index:50;
+  margin:0 -24px 28px;
+  padding:16px 24px;
+  min-height:74px;
+  border-radius:0 0 22px 22px;
+  border:1px solid rgba(231,234,240,.85);
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:0 8px 24px rgba(16,24,40,.045);
+}
+
+.brand-logo-text{
+  font-size:27px;
+  letter-spacing:-1px;
+  transition:transform .25s ease;
+}
+.brand-banner:hover .brand-logo-text{transform:translateX(2px)}
+.brand-tag{border-radius:6px;padding:3px 7px}
+
+.user-badge{
+  min-height:40px;
+  padding:5px 8px 5px 13px;
+  background:rgba(248,249,250,.85);
+  transition:all .25s ease;
+}
+.user-badge:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 18px rgba(16,24,40,.08);
+}
+
+.card,.metric-card,.login-box{
+  border-color:rgba(231,234,240,.95);
+  border-radius:var(--ui-radius);
+  box-shadow:var(--ui-shadow);
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),
+             box-shadow .28s ease,
+             border-color .28s ease;
+}
+.card:hover,.metric-card:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--ui-shadow-hover);
+  border-color:#dde2ea;
+}
+
+.card{padding:22px;margin-bottom:18px}
+.card-header{margin-bottom:18px}
+.card-title{font-size:14px;letter-spacing:.1px;text-transform:none}
+.card-title svg{width:18px;height:18px;opacity:.8}
+
+.metric-card{
+  position:relative;
+  overflow:hidden;
+  padding:25px;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.98),rgba(255,248,246,.98));
+}
+.metric-card::before{
+  content:"";
+  position:absolute;
+  width:170px;height:170px;
+  right:-65px;top:-75px;
+  border-radius:50%;
+  background:rgba(229,72,50,.08);
+  animation:floatOrb 6s ease-in-out infinite;
+}
+.metric-card::after{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(to bottom,var(--ui-red),#ff8c7a);
+  border-radius:18px 0 0 18px;
+}
+.metric-header,.metric-val{position:relative;z-index:1}
+.metric-title{font-size:10px;letter-spacing:1.4px}
+.metric-val{
+  font-size:46px;
+  letter-spacing:-2px;
+  margin-top:5px;
+}
+.metric-val span{letter-spacing:0!important}
+
+.field label{font-size:10px;letter-spacing:.8px}
+input[type=text],input[type=password],select{
+  min-height:48px;
+  border-radius:12px;
+  border-color:#e2e6ed;
+  background:#fff;
+}
+input:hover,select:hover{border-color:#cfd5df}
+input:focus,select:focus{
+  transform:translateY(-1px);
+  border-color:var(--ui-red);
+  box-shadow:0 0 0 4px rgba(229,72,50,.10),0 5px 16px rgba(16,24,40,.06);
+}
+
+.btn{
+  min-height:46px;
+  border-radius:12px;
+  position:relative;
+  overflow:hidden;
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+}
+.btn::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-120%);
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);
+  transition:transform .55s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:hover::after{transform:translateX(120%)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn-brand{
+  box-shadow:0 8px 18px rgba(229,72,50,.20);
+}
+.btn-brand:hover{box-shadow:0 11px 24px rgba(229,72,50,.26)}
+
+.btn-icon{
+  width:40px;height:40px;border-radius:11px;
+  transition:all .2s ease;
+}
+.btn-icon:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(16,24,40,.08)}
+
+.list-item{
+  min-height:64px;
+  padding:12px 15px;
+  border-radius:13px;
+  background:linear-gradient(180deg,#fff,#fafbfc);
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.list-item:hover{
+  transform:translateX(3px);
+  border-color:#dfe4eb;
+  box-shadow:0 6px 18px rgba(16,24,40,.06);
+}
+
+.badge{border-radius:999px;padding:5px 10px}
+.badge-ot{
+  box-shadow:inset 0 0 0 1px rgba(229,72,50,.05);
+}
+
+.login-box{
+  max-width:470px;
+  margin:8vh auto 0;
+  padding:34px;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(12px);
+  animation:cardIn .55s .08s cubic-bezier(.2,.8,.2,1) both;
+}
+.login-box::before{
+  content:"";
+  display:block;
+  width:44px;height:4px;
+  border-radius:99px;
+  background:linear-gradient(90deg,var(--ui-red),#ff8d7b);
+  margin-bottom:22px;
+}
+
+nav.bottom-nav{
+  bottom:18px;
+  width:min(520px,calc(100% - 32px));
+  max-width:520px;
+  padding:7px;
+  background:rgba(255,255,255,.86);
+  backdrop-filter:blur(20px) saturate(150%);
+  -webkit-backdrop-filter:blur(20px) saturate(150%);
+  border:1px solid rgba(221,226,234,.9);
+  box-shadow:0 15px 45px rgba(16,24,40,.13);
+}
+nav.bottom-nav button{
+  min-height:44px;
+  padding:9px 18px;
+  border-radius:12px;
+  transition:all .25s cubic-bezier(.2,.8,.2,1);
+}
+nav.bottom-nav button.active{
+  box-shadow:0 6px 16px rgba(229,72,50,.20);
+}
+nav.bottom-nav button:not(.active):hover{
+  background:#f5f7fa;
+  color:var(--ui-text);
+}
+
+#tabContent{
+  animation:tabIn .38s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes pageIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:none}
+}
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(18px) scale(.985)}
+  to{opacity:1;transform:none}
+}
+@keyframes tabIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:none}
+}
+@keyframes floatOrb{
+  0%,100%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(-10px,8px,0)}
+}
+
+@media (min-width:760px){
+  body{align-items:flex-start}
+  .app-container{padding-top:0}
+  .brand-banner{margin-left:-24px;margin-right:-24px}
+  #tabContent{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:0;
+  }
+  nav.bottom-nav{
+    position:sticky;
+    bottom:auto;
+    left:auto;
+    transform:none;
+    margin:0 auto 22px;
+    width:max-content;
+    order:-1;
+  }
+  .metric-card{min-height:175px}
+}
+
+@media (min-width:980px){
+  .app-container{padding-left:34px;padding-right:34px}
+  .brand-banner{margin-left:-34px;margin-right:-34px;padding-left:34px;padding-right:34px}
+  #tabContent > .metric-card{
+    max-width:none;
+  }
+  .card{padding:24px}
+}
+
+@media (max-width:599px){
+  .app-container{padding:0 14px 105px}
+  .brand-banner{
+    margin:0 -14px 18px;
+    padding:14px 15px;
+    min-height:68px;
+    border-radius:0 0 18px 18px;
+  }
+  .brand-logo-text{font-size:24px}
+  .user-badge span{max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .card{padding:17px;margin-bottom:13px}
+  .metric-card{padding:20px;margin-bottom:13px}
+  .metric-val{font-size:40px}
+  .login-box{margin-top:7vh;padding:24px 19px}
+  nav.bottom-nav{
+    bottom:10px;
+    width:calc(100% - 20px);
+    padding:6px;
+  }
+  nav.bottom-nav button{
+    flex:1;
+    justify-content:center;
+    padding:9px 8px;
+    font-size:11px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
+</style>
+
+
+<style id="employee-profile-ui">
+/* ===== EMPLOYEE PROFILE / HR PORTAL ===== */
+.employee-profile{
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:18px;
+  padding:22px;
+  margin-bottom:18px;
+  border:1px solid #e7eaf0;
+  border-radius:20px;
+  background:linear-gradient(135deg,#ffffff 0%,#fff8f6 100%);
+  box-shadow:0 10px 30px rgba(16,24,40,.07);
+  animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both;
+}
+.employee-profile::after{
+  content:"";
+  position:absolute;
+  width:190px;height:190px;
+  right:-80px;top:-100px;
+  border-radius:50%;
+  background:rgba(229,72,50,.07);
+}
+.employee-avatar{
+  width:64px;height:64px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:18px;
+  background:linear-gradient(145deg,#e54832,#ff806e);
+  color:#fff;
+  font:700 24px/1 'Space Grotesk',sans-serif;
+  box-shadow:0 10px 22px rgba(229,72,50,.22);
+  position:relative;z-index:1;
+}
+.employee-profile-main{position:relative;z-index:1;min-width:0}
+.employee-profile-name{
+  margin:0 0 3px;
+  font:700 21px/1.25 'Sarabun',sans-serif;
+  color:#172033;
+}
+.employee-profile-role{
+  margin:0;
+  color:#667085;
+  font-size:12px;
+}
+.employee-profile-meta{
+  display:flex;flex-wrap:wrap;gap:7px;
+  margin-top:10px;
+}
+.employee-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#f5f7fa;
+  border:1px solid #e7eaf0;
+  color:#475467;
+  font-size:11px;font-weight:600;
+}
+.employee-chip.online{
+  background:#ecfdf3;color:#087443;border-color:#d1fadf;
+}
+.employee-summary{
+  position:relative;z-index:1;
+  min-width:125px;
+  text-align:right;
+}
+.employee-summary-label{
+  font-size:10px;text-transform:uppercase;letter-spacing:1px;
+  color:#98a2b3;font-weight:700;
+}
+.employee-summary-value{
+  margin-top:3px;
+  font:700 26px/1 'Space Grotesk',sans-serif;
+  color:#e54832;
+}
+.employee-summary-value small{
+  font:500 11px 'Sarabun',sans-serif;
+  color:#667085;
+}
+.employee-section-title{
+  display:flex;align-items:center;justify-content:space-between;
+  margin:24px 2px 10px;
+}
+.employee-section-title h3{
+  margin:0;font-size:13px;font-weight:700;color:#172033;
+}
+.employee-section-title span{
+  font-size:11px;color:#98a2b3;
+}
+.employee-info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.employee-info{
+  padding:14px;
+  border:1px solid #e7eaf0;
+  border-radius:14px;
+  background:#fff;
+}
+.employee-info-label{
+  display:block;
+  margin-bottom:4px;
+  color:#98a2b3;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+}
+.employee-info-value{
+  color:#344054;
+  font-size:13px;
+  font-weight:600;
+  word-break:break-word;
+}
+@media(max-width:599px){
+  .employee-profile{
+    grid-template-columns:auto 1fr;
+    gap:13px;
+    padding:18px;
+  }
+  .employee-avatar{width:54px;height:54px;border-radius:16px;font-size:20px}
+  .employee-profile-name{font-size:18px}
+  .employee-summary{
+    grid-column:1/-1;
+    display:flex;align-items:center;justify-content:space-between;
+    text-align:left;
+    padding-top:13px;
+    margin-top:2px;
+    border-top:1px solid #edf0f3;
+  }
+  .employee-summary-value{font-size:24px}
+  .employee-info-grid{grid-template-columns:1fr}
+}
+</style>
+
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-container" aria-label="UNO Employee Portal">
   <div class="brand-banner">
     <div>
       <h1 class="brand-logo-text">UNO!</h1>
@@ -470,7 +1041,7 @@ function renderLogin() {
           <label>Password (รหัสผ่าน)</label>
           <input type="password" id="loginPass" placeholder="••••••••" required>
         </div>
-        <button type="submit" class="btn btn-brand" style="width: 100%; margin-top: 8px;">LOG IN</button>
+        <button type="submit" class="btn btn-brand" style="width: 100%; margin-top: 8px;">เข้าสู่ระบบ</button>
       </form>
       ${state.loginError ? `<p style="color:var(--brand-red); font-size:12px; font-weight:600; text-align:center; margin-top:14px; margin-bottom:0;">${escapeHtml(state.loginError)}</p>` : ''}
     </div>
@@ -556,7 +1127,55 @@ function renderEmployeeView(container) {
 
   history.sort((a,b) => b.ymd.localeCompare(a.ymd));
 
+  const employee = (state.db.employees || {})[code] || {};
+  const initials = String(name || code || 'U').trim().split(/\s+/).map(x => x[0]).join('').slice(0,2).toUpperCase();
+  const employeeRole = employee.position || employee.role || 'Employee';
+  // แก้ไขให้ดึงจาก branchCode ก่อนเป็นอันดับแรก
+  const employeeBranch = employee.branchCode || employee.branch || employee.store || employee.location || 'UNO! Coffee';
+  const employeeId = employee.code || code;
+
   container.innerHTML = `
+    <section class="employee-profile" aria-label="ข้อมูลพนักงาน">
+      <div class="employee-avatar">${escapeHtml(initials)}</div>
+      <div class="employee-profile-main">
+        <h2 class="employee-profile-name">${escapeHtml(name)}</h2>
+        <p class="employee-profile-role">${escapeHtml(employeeRole)}</p>
+        <div class="employee-profile-meta">
+          <span class="employee-chip">ID ${escapeHtml(employeeId)}</span>
+          <span class="employee-chip online">● Active</span>
+        </div>
+      </div>
+      <div class="employee-summary">
+        <div>
+          <div class="employee-summary-label">Accumulated OT</div>
+          <div class="employee-summary-value">${formatOT(totalOt)} <small>HRS</small></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="employee-section-title">
+      <h3>ข้อมูลพนักงาน</h3>
+      <span>Employee Profile</span>
+    </div>
+    <section class="employee-info-grid">
+      <div class="employee-info">
+        <span class="employee-info-label">ชื่อพนักงาน</span>
+        <span class="employee-info-value">${escapeHtml(name)}</span>
+      </div>
+      <div class="employee-info">
+        <span class="employee-info-label">รหัสพนักงาน</span>
+        <span class="employee-info-value">${escapeHtml(employeeId)}</span>
+      </div>
+      <div class="employee-info">
+        <span class="employee-info-label">ตำแหน่ง</span>
+        <span class="employee-info-value">${escapeHtml(employeeRole)}</span>
+      </div>
+      <div class="employee-info">
+        <span class="employee-info-label">สาขา / สถานที่</span>
+        <span class="employee-info-value">${escapeHtml(employeeBranch)}</span>
+      </div>
+    </section>
+
     <div class="metric-card">
       <div class="metric-header">
         <span class="metric-title">ACCUMULATED OVERTIME</span>
@@ -589,7 +1208,7 @@ function renderEmployeeView(container) {
               <span class="badge ${h.status==='work'?'badge-work':h.status==='off'?'badge-off':'badge-sick'}">
                 ${h.status==='work'?'WORK':h.status==='off'?'OFF':'LEAVE'}
               </span>
-              <div style="margin-top:4px;">${h.otHours > 0 ? `<span class="badge badge-ot">+${formatOT(h.otHours)} HRS</span>` : ''}</div>
+              <div style="margin-top:4px;">${h.otHours > 0 ? `<span class="badge badge-ot">+${formatOT(h.otHours)} ชม.</span>` : ''}</div>
             </div>
           </div>
         `).join("")
